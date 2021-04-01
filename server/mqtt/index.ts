@@ -16,6 +16,9 @@ import { changeArrayState } from 'lib/changeArrayState';
 import { changeDockerState } from 'lib/docker/changeDockerState';
 import { changeServerState } from 'lib/changeServerState';
 import { attachUSB, detachUSB } from 'lib/vm/attachUSB';
+import { readMqttKeys } from 'lib/storage/secure';
+import { parseServers } from 'lib/storage/servers';
+import { getMqttConfig } from 'lib/config';
 
 let retry;
 
@@ -24,7 +27,7 @@ let repeater;
 
 export function startMQTTClient() {
   try {
-    let haOptions = JSON.parse(
+    const haOptions = JSON.parse(
       fs.readFileSync('/data/options.json').toString(),
     );
     Object.keys(haOptions).forEach((key) => {
@@ -41,18 +44,23 @@ export function startMQTTClient() {
   this.getVMDetails = getVMDetails.bind(this);
   this.getDockerDetails = getDockerDetails.bind(this);
   this.getServerDetails = getServerDetails.bind(this);
+  const {
+    MQTTBaseTopic,
+    MQTTUser,
+    MQTTPass,
+    MQTTPort,
+    MQTTBroker,
+  } = getMqttConfig();
 
   const options = {
-    username: process.env.MQTTUser,
-    password: process.env.MQTTPass,
-    port: parseInt(process.env.MQTTPort),
-    host: process.env.MQTTBroker,
+    username: MQTTUser,
+    password: MQTTPass,
+    port: MQTTPort,
+    host: MQTTBroker,
     rejectUnauthorized: process.env.MQTTSelfSigned !== 'true',
   };
   const client = mqtt.connect(
-    process.env.MQTTSecure === 'true'
-      ? 'mqtts://'
-      : 'mqtt://' + process.env.MQTTBroker,
+    process.env.MQTTSecure === 'true' ? 'mqtts://' : `mqtt://${MQTTBroker}`,
     options,
   );
 
@@ -61,7 +69,7 @@ export function startMQTTClient() {
       'connect',
       (packet: Packet) => {
         console.log('Connected to mqtt broker');
-        client.subscribe(process.env.MQTTBaseTopic + '/bridge/state');
+        client.subscribe(MQTTBaseTopic + '/bridge/state');
         updateMQTT(client);
         if (repeater) {
           repeater = clearTimeout(repeater);
@@ -75,35 +83,20 @@ export function startMQTTClient() {
     );
 
     client.on('message', async (topic, message) => {
-      let queryID = await uniqid.time('MQTT-R-', '');
+      const queryID = uniqid.time('MQTT-R-', '');
       console.log(
-        'Received MQTT Topic: ' +
-        topic +
-        ' and Message: ' +
-        message +
-        ' assigning ID: ' +
-        queryID,
+        `Received MQTT Topic: ${topic} and Message: ${message} assigning ID: ${queryID}`,
       );
 
-      if (topic === process.env.MQTTBaseTopic + '/bridge/state') {
+      if (topic === MQTTBaseTopic + '/bridge/state') {
         updated = {};
         console.log('Invalidating caches as the MQTT Bridge just restarted');
-        console.log(queryID + ' succeeded');
+        console.log(`${queryID} succeeded`);
         return;
       }
 
-      let keys = JSON.parse(
-        fs
-          .readFileSync(
-            (process.env.KeyStorage
-              ? process.env.KeyStorage + '/'
-              : 'secure/') + 'mqttKeys',
-          )
-          .toString(),
-      );
-      let servers = JSON.parse(
-        fs.readFileSync('config/servers.json').toString(),
-      );
+      const keys = await readMqttKeys();
+      const servers = await parseServers();
 
       const topicParts = topic.split('/');
       let ip = '';
@@ -112,8 +105,8 @@ export function startMQTTClient() {
         usbDetails: [],
       };
 
-      let serverTitleSanitised;
-      for (let [serverIp, server] of Object.entries<Server>(servers)) {
+      let serverTitleSanitised = '';
+      for (const [serverIp, server] of Object.entries<Server>(servers)) {
         if (
           server.serverDetails &&
           sanitise(server.serverDetails.title) === topicParts[1]
@@ -127,13 +120,11 @@ export function startMQTTClient() {
 
       if (ip === '') {
         console.log(
-          'Failed to process ' +
-          queryID +
-          ', servers not loaded. If the API just started this should go away after a minute, otherwise log into servers in the UI',
+          `Failed to process ${queryID}, servers not loaded. If the API just started this should go away after a minute, otherwise log into servers in the UI`,
         );
         return;
       }
-      let token = await getCSRFToken(ip, keys[ip]);
+      const token = await getCSRFToken(ip, keys[ip]);
 
       let vmIdentifier = '';
       let vmDetails: VmDetails = {};
@@ -164,7 +155,7 @@ export function startMQTTClient() {
         }
       }
 
-      let responses = [];
+      const responses = [];
 
       if (topic.toLowerCase().includes('state')) {
         let command = '';
@@ -224,13 +215,9 @@ export function startMQTTClient() {
               ? vmDetails.edit.nics[0].mac
               : undefined,
           };
-          console.log('Updating MQTT for: ' + queryID);
+          console.log(`Updating MQTT for: ${queryID}`);
           client.publish(
-            process.env.MQTTBaseTopic +
-            '/' +
-            serverTitleSanitised +
-            '/' +
-            vmSanitisedName,
+            `${MQTTBaseTopic}/${serverTitleSanitised}/${vmSanitisedName}`,
             JSON.stringify(vmDetailsToSend),
           );
 
@@ -240,11 +227,9 @@ export function startMQTTClient() {
         } else {
           dockerDetails.status = message.toString();
           client.publish(
-            process.env.MQTTBaseTopic +
-            '/' +
-            serverTitleSanitised +
-            '/' +
-            sanitise(dockerDetails.name),
+            `${MQTTBaseTopic}/${serverTitleSanitised}/${sanitise(
+              dockerDetails.name,
+            )}`,
             JSON.stringify(dockerDetails),
           );
           responses.push(
@@ -258,7 +243,7 @@ export function startMQTTClient() {
           );
         }
       } else if (topic.includes('attach')) {
-        let data = {
+        const data = {
           server: ip,
           id: vmIdentifier,
           auth: keys[ip],
@@ -278,13 +263,7 @@ export function startMQTTClient() {
           (usb) => sanitise(usb.id) === topicParts[3],
         )[0];
         client.publish(
-          process.env.MQTTBaseTopic +
-          '/' +
-          serverTitleSanitised +
-          '/' +
-          vmSanitisedName +
-          '/' +
-          topicParts[3],
+          `${MQTTBaseTopic}/${serverTitleSanitised}/${vmSanitisedName}/${topicParts[3]}`,
           JSON.stringify({
             id: topicParts[3],
             attached: message.toString().toLowerCase() !== 'false',
@@ -299,14 +278,14 @@ export function startMQTTClient() {
         }
         serverDetails.serverDetails.arrayStatus = message.toString();
         client.publish(
-          process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+          `${MQTTBaseTopic}/${serverTitleSanitised}`,
           JSON.stringify(serverDetails),
         );
         responses.push(await changeArrayState(command, ip, keys[ip], token));
       } else if (topic.includes('powerOff')) {
         serverDetails.serverDetails.on = false;
         client.publish(
-          process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+          `${MQTTBaseTopic}/${serverTitleSanitised}`,
           JSON.stringify(serverDetails),
         );
         responses.push(
@@ -315,7 +294,7 @@ export function startMQTTClient() {
       } else if (topic.includes('reboot')) {
         serverDetails.serverDetails.on = false;
         client.publish(
-          process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+          `${MQTTBaseTopic}/${serverTitleSanitised}`,
           JSON.stringify(serverDetails),
         );
         responses.push(await changeServerState('reboot', ip, keys[ip], token));
@@ -323,14 +302,14 @@ export function startMQTTClient() {
         if (!serverDetails.serverDetails.parityCheckRunning) {
           serverDetails.serverDetails.parityCheckRunning = true;
           client.publish(
-            process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+            `${MQTTBaseTopic}/${serverTitleSanitised}`,
             JSON.stringify(serverDetails),
           );
           responses.push(await changeServerState('check', ip, keys[ip], token));
         } else {
           serverDetails.serverDetails.parityCheckRunning = false;
           client.publish(
-            process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+            `${MQTTBaseTopic}/${serverTitleSanitised}`,
             JSON.stringify(serverDetails),
           );
           responses.push(
@@ -340,14 +319,14 @@ export function startMQTTClient() {
       } else if (topic.includes('move')) {
         serverDetails.serverDetails.moverRunning = true;
         client.publish(
-          process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+          `${MQTTBaseTopic}/${serverTitleSanitised}`,
           JSON.stringify(serverDetails),
         );
         responses.push(await changeServerState('move', ip, keys[ip], token));
       } else if (topic.includes('sleep')) {
         serverDetails.serverDetails.on = false;
         client.publish(
-          process.env.MQTTBaseTopic + '/' + serverTitleSanitised,
+          `${MQTTBaseTopic}/${serverTitleSanitised}`,
           JSON.stringify(serverDetails),
         );
         responses.push(await changeServerState('sleep', ip, keys[ip], token));
@@ -373,8 +352,8 @@ export function startMQTTClient() {
       }
     });
 
-    client.on('error', function(error) {
-      console.log('Can\'t connect' + error);
+    client.on('error', function (error) {
+      console.log("Can't connect" + error);
     });
   } catch (e) {
     if (

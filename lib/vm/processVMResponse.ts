@@ -1,8 +1,8 @@
 import { simplifyResponse } from './simplifyResponse';
 import { groupVmDetails } from './groupVmDetails';
 
-export function processVMResponse(response, ip, auth) {
-  let object = [];
+export async function processVMResponse(response, ip: string, auth: string) {
+  const object = [];
   groupVmDetails(response, object);
-  return simplifyResponse(object, ip, auth);
+  return await simplifyResponse(object, ip, auth);
 }

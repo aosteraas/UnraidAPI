@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { parseServers } from 'lib/storage/servers';
-import { VmDetails, VmEdit } from 'models/vm';
+import { VmDetails } from 'models/vm';
 import { callSucceeded, callFailed } from '../api';
 import { authCookies } from '../auth';
 import { extractVMDetails } from '../scraper/extractVMDetails';
@@ -11,7 +11,7 @@ export async function gatherDetailsFromEditVM(
   vmObject: VmDetails | undefined,
   auth: string,
 ): Promise<VmDetails> {
-  let servers = await parseServers();
+  const servers = await parseServers();
   if (!vmObject) {
     vmObject = servers[ip].vm.details[id];
   }

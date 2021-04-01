@@ -1,10 +1,14 @@
 import { gatherDetailsFromEditVM } from './gatherDetailsFromEditVM';
 import { VmDetails } from '../../models/vm';
 
-export async function simplifyResponse(object, ip, auth) {
-  let temp = {};
+export async function simplifyResponse(
+  object,
+  ip: string,
+  auth: string,
+): Promise<Record<string, VmDetails>> {
+  const temp: Record<string, VmDetails> = {};
   for (let i = 0; i < object.length; i++) {
-    let vm = object[i];
+    const vm = object[i];
     let newVMObject: VmDetails = {
       name: '',
       id: '',
@@ -39,10 +43,10 @@ export async function simplifyResponse(object, ip, auth) {
     if (vm.child.children[0].children[0].children[1].children) {
       vm.child.children[0].children[0].children[1].children.forEach(
         (driveDetails) => {
-          let detailsArr = driveDetails.children.map((drive) => {
+          const detailsArr = driveDetails.children.map((drive) => {
             return drive.contents;
           });
-          let details = {
+          const details = {
             path: detailsArr[0],
             interface: detailsArr[1],
             allocated: detailsArr[2],

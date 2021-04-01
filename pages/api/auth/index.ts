@@ -12,7 +12,7 @@ export default async function (
 }
 
 async function storeServerDetails({ ip, user, password }: LoginBody) {
-  let response = { message: '' };
+  const response = { message: '' };
 
   try {
     const [servers, keys] = await Promise.all([
@@ -31,7 +31,7 @@ async function storeServerDetails({ ip, user, password }: LoginBody) {
     const serverExists = servers[ip] !== undefined;
     servers[ip] = serverExists ? servers[ip] : {};
 
-    const authToken = Buffer.from(`${user}:${password}`).toString("base64");
+    const authToken = Buffer.from(`${user}:${password}`).toString('base64');
     keys[ip] = authToken;
 
     await Promise.all([writeMqttKeys(keys), writeServersJson(servers)]);

@@ -28,7 +28,7 @@ export function getVMs(servers: ServerMap, serverAuth: Record<string, string>) {
         };
         let htmlDetails;
         if (response.data.toString().includes('\u0000')) {
-          let parts = response.data.toString().split('\u0000');
+          const parts = response.data.toString().split('\u0000');
           htmlDetails = JSON.stringify(parts[0]);
 
           servers[ip].vm.extras = parts[1];
@@ -36,7 +36,7 @@ export function getVMs(servers: ServerMap, serverAuth: Record<string, string>) {
           htmlDetails = response.data.toString();
         }
 
-        let details = parseHTML(htmlDetails);
+        const details = parseHTML(htmlDetails);
         servers[ip].vm.details = await processVMResponse(
           details,
           ip,
