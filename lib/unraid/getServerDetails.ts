@@ -5,7 +5,7 @@ import { updateFile } from '../storage/updateFile';
 export function getServerDetails(
   servers: ServerMap,
   serverAuth: Record<string, string>,
-) {
+): void {
   Object.keys(servers).forEach(async (ip) => {
     if (!serverAuth[ip]) {
       servers[ip].serverDetails.on = false;

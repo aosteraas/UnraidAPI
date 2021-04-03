@@ -36,7 +36,7 @@ export async function changeDockerState(
     }
     return response.data;
   } catch (e) {
-    console.log('Change Docker State for ip: ' + server + ' Failed');
+    console.log(`Change Docker State for ip: ${server} Failed`);
     if (e.response && e.response.status) {
       callFailed(server, e.response.status);
     } else {

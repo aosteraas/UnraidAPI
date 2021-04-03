@@ -3,7 +3,10 @@ import { authCookies } from './authCookies';
 import { callSucceeded, callFailed } from '../api';
 import { extractValue } from '../scraper';
 
-export async function getCSRFToken(server: string, auth: string) {
+export async function getCSRFToken(
+  server: string,
+  auth: string,
+): Promise<string> {
   try {
     const baseUrl = server.includes('http') ? server : `http://${server}`;
     const cookie = authCookies.get(server) ?? '';
@@ -19,7 +22,7 @@ export async function getCSRFToken(server: string, auth: string) {
     callSucceeded(server);
     return extractValue(response.data, 'csrf_token=', "'");
   } catch (e) {
-    console.log('Get CSRF Token for server: ' + server + ' Failed');
+    console.log(`Get CSRF Token for server: ${server} Failed`);
     if (e.response && e.response.status) {
       callFailed(server, e.response.status);
     } else {

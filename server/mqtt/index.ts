@@ -69,7 +69,7 @@ export function startMQTTClient() {
       'connect',
       (packet: Packet) => {
         console.log('Connected to mqtt broker');
-        client.subscribe(MQTTBaseTopic + '/bridge/state');
+        client.subscribe(`${MQTTBaseTopic}/bridge/state`);
         updateMQTT(client);
         if (repeater) {
           repeater = clearTimeout(repeater);
@@ -88,7 +88,7 @@ export function startMQTTClient() {
         `Received MQTT Topic: ${topic} and Message: ${message} assigning ID: ${queryID}`,
       );
 
-      if (topic === MQTTBaseTopic + '/bridge/state') {
+      if (topic === `${MQTTBaseTopic}/bridge/state`) {
         updated = {};
         console.log('Invalidating caches as the MQTT Bridge just restarted');
         console.log(`${queryID} succeeded`);
@@ -338,22 +338,22 @@ export function startMQTTClient() {
           success = !!response.success;
         } else if (!response) {
           success = false;
-          console.log('Part of ' + queryID + ' failed.');
+          console.log(`Part of ${queryID} failed.`);
         }
         if (response && response.error) {
           success = false;
           console.log(
-            'Part of ' + queryID + ' failed with response: ' + response.error,
+            `Part of ${queryID} failed with response: ${response.error}`,
           );
         }
       });
       if (success) {
-        console.log(queryID + ' succeeded');
+        console.log(`${queryID} succeeded`);
       }
     });
 
     client.on('error', function (error) {
-      console.log("Can't connect" + error);
+      console.log(`Can't connect${error}`);
     });
   } catch (e) {
     if (

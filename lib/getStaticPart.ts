@@ -1,5 +1,11 @@
-export function getStaticPart(vmObject, id, create: boolean) {
-  return (
+import { VmEdit } from 'models/vm';
+
+export function getStaticPart(
+  vmObject: VmEdit,
+  id: string,
+  create: boolean,
+): string {
+  return `${
     `template%5Bos%5D=${vmObject.template_os}` +
     `template%5Bname%5D=${vmObject.template_name}` +
     `template%5Bicon%5D=${vmObject.template_icon}` +
@@ -23,8 +29,6 @@ export function getStaticPart(vmObject, id, create: boolean) {
     // TODO is encodeURI needed for these 4?
     `&media%5Bcdrombus%5D=${vmObject.media_cdrombus}` +
     `&media%5Bdrivers%5D=${vmObject.media_drivers}` +
-    `&media%5Bdriversbus%5D=${vmObject.media_driversbus}` +
-    (create ? '&createvm=' + 1 : '&updatevm=' + 1) +
-    '&domain%5Bpassword%5D='
-  );
+    `&media%5Bdriversbus%5D=${vmObject.media_driversbus}`
+  }${create ? `&createvm=${1}` : `&updatevm=${1}`}&domain%5Bpassword%5D=`;
 }

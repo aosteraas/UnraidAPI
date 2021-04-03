@@ -9,7 +9,7 @@ import { processDockerResponse } from './processDockerResponse';
 export function getDockers(
   servers: ServerMap,
   serverAuth: Record<string, string>,
-) {
+): void {
   // const serverIps = Object.keys(servers);
 
   Object.keys(servers).forEach((ip) => {
@@ -17,7 +17,7 @@ export function getDockers(
       return;
     }
     const url = `${
-      ip.includes('http') ? ip : 'http://' + ip
+      ip.includes('http') ? ip : `http://${ip}`
     }/plugins/dynamix.docker.manager/include/DockerContainers.php`;
 
     axios({
@@ -30,8 +30,8 @@ export function getDockers(
     })
       .then(async (response) => {
         callSucceeded(ip);
-        let htmlDetails = JSON.stringify(response.data);
-        let details = parseHTML(htmlDetails);
+        const htmlDetails = JSON.stringify(response.data);
+        const details = parseHTML(htmlDetails);
         if (!servers[ip].docker) {
           servers[ip].docker = {
             details: processDockerResponse(details),
@@ -42,7 +42,7 @@ export function getDockers(
         updateFile(servers, ip, 'docker');
       })
       .catch((e) => {
-        console.log('Get Docker Details for ip: ' + ip + ' Failed');
+        console.log(`Get Docker Details for ip: ${ip} Failed`);
         if (e.response && e.response.status) {
           callFailed(ip, e.response.status);
         } else {

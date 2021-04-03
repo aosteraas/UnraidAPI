@@ -1,4 +1,4 @@
-export function sanitise(string?: string) {
+export function sanitise(string?: string): string {
   if (!string) {
     return '';
   }

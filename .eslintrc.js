@@ -25,5 +25,6 @@ module.exports = {
     'react/display-name': 0,
     'react/prop-types': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
+    'prefer-template': 1,
   },
 };

@@ -8,7 +8,7 @@ import { updateFile } from '../storage/updateFile';
 export function getUSBDetails(
   servers: ServerMap,
   serverAuth: Record<string, string>,
-) {
+): void {
   Object.keys(servers).forEach((ip) => {
     if (!serverAuth[ip]) {
       return;

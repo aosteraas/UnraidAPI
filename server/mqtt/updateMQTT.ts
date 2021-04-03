@@ -6,7 +6,7 @@ import { parseServers } from 'lib/storage/servers';
 import { readDisabledDevices } from 'lib/storage/devices';
 import { getMqttConfig } from 'lib/config';
 
-export async function updateMQTT(client: MqttClient) {
+export async function updateMQTT(client: MqttClient): Promise<void> {
   try {
     const { MQTTRefreshRate } = getMqttConfig();
 

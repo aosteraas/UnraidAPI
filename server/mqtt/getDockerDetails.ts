@@ -1,16 +1,18 @@
 import { getMqttConfig } from 'lib/config';
+import { Server } from 'models/server';
+import { MqttClient } from 'mqtt';
 import { sanitise } from './sanitise';
 
-let updated: Record<string, any> = {};
+const updated: Record<string, any> = {};
 
 export function getDockerDetails(
-  client,
-  serverTitleSanitised,
-  disabledDevices,
-  dockerId,
-  ip,
-  server,
-) {
+  client: MqttClient,
+  serverTitleSanitised: string,
+  disabledDevices: string,
+  dockerId: string,
+  ip: string,
+  server: Server,
+): void {
   if (disabledDevices.includes(`${ip}|${dockerId}`)) {
     return;
   }
@@ -22,7 +24,7 @@ export function getDockerDetails(
   ) {
     return;
   }
-  let docker = server.docker.details.containers[dockerId];
+  const docker = server.docker.details.containers[dockerId];
   if (!docker) {
     return;
   }

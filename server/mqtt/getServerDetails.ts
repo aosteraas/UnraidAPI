@@ -3,17 +3,18 @@ import { sanitise } from './sanitise';
 import { getDockerDetails } from './getDockerDetails';
 import { getVMDetails } from './getVMDetails';
 import { getMqttConfig } from 'lib/config';
+import { ServerMap } from 'models/server';
 
-let updated: Record<string, any> = {};
+const updated: Record<string, any> = {};
 
 export function getServerDetails(
   client: MqttClient,
-  servers,
-  disabledDevices,
+  servers: ServerMap,
+  disabledDevices: string,
   ip: string,
-  timer,
-) {
-  let server = servers[ip];
+  timer: number,
+): void {
+  const server = servers[ip];
   if (!server.serverDetails || disabledDevices.includes(ip)) {
     return;
   }
@@ -27,102 +28,102 @@ export function getServerDetails(
   if (updated[ip].details !== JSON.stringify(server.serverDetails)) {
     const serverDevice = {
       identifiers: [serverTitleSanitised],
-      name: serverTitleSanitised + '_server',
+      name: `${serverTitleSanitised}_server`,
       manufacturer: server.serverDetails.motherboard,
       model: 'Unraid Server',
     };
     client.publish(
-      MQTTBaseTopic + '/binary_sensor/' + serverTitleSanitised + '/config',
+      `${MQTTBaseTopic}/binary_sensor/${serverTitleSanitised}/config`,
       JSON.stringify({
         payload_on: true,
         payload_off: false,
         value_template: '{{ value_json.on }}',
-        state_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        json_attributes_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        name: serverTitleSanitised + '_server',
-        unique_id: serverTitleSanitised + ' unraid api server',
+        state_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        json_attributes_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        name: `${serverTitleSanitised}_server`,
+        unique_id: `${serverTitleSanitised} unraid api server`,
         device: serverDevice,
       }),
     );
     client.publish(
-      MQTTBaseTopic + '/switch/' + serverTitleSanitised + '/config',
+      `${MQTTBaseTopic}/switch/${serverTitleSanitised}/config`,
       JSON.stringify({
         payload_on: 'Started',
         payload_off: 'Stopped',
         value_template: '{{ value_json.arrayStatus }}',
-        state_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        json_attributes_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        name: serverTitleSanitised + '_array',
-        unique_id: serverTitleSanitised + ' unraid api array',
+        state_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        json_attributes_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        name: `${serverTitleSanitised}_array`,
+        unique_id: `${serverTitleSanitised} unraid api array`,
         device: serverDevice,
-        command_topic: MQTTBaseTopic + '/' + serverTitleSanitised + '/array',
+        command_topic: `${MQTTBaseTopic}/${serverTitleSanitised}/array`,
       }),
     );
-    client.subscribe(MQTTBaseTopic + '/' + serverTitleSanitised + '/array');
+    client.subscribe(`${MQTTBaseTopic}/${serverTitleSanitised}/array`);
 
     client.publish(
-      MQTTBaseTopic + '/switch/' + serverTitleSanitised + '/powerOff/config',
+      `${MQTTBaseTopic}/switch/${serverTitleSanitised}/powerOff/config`,
       JSON.stringify({
         payload_on: false,
         payload_off: true,
         value_template: '{{ value_json.on }}',
-        state_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        name: serverTitleSanitised + '_power_off',
-        unique_id: serverTitleSanitised + ' unraid server power off',
+        state_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        name: `${serverTitleSanitised}_power_off`,
+        unique_id: `${serverTitleSanitised} unraid server power off`,
         device: serverDevice,
-        command_topic: MQTTBaseTopic + '/' + serverTitleSanitised + '/powerOff',
+        command_topic: `${MQTTBaseTopic}/${serverTitleSanitised}/powerOff`,
       }),
     );
-    client.subscribe(MQTTBaseTopic + '/' + serverTitleSanitised + '/powerOff');
+    client.subscribe(`${MQTTBaseTopic}/${serverTitleSanitised}/powerOff`);
 
     client.publish(
-      MQTTBaseTopic + '/switch/' + serverTitleSanitised + '/reboot/config',
+      `${MQTTBaseTopic}/switch/${serverTitleSanitised}/reboot/config`,
       JSON.stringify({
         payload_on: false,
         payload_off: true,
         value_template: '{{ value_json.on }}',
-        state_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        name: serverTitleSanitised + '_reboot',
-        unique_id: serverTitleSanitised + ' unraid server reboot',
+        state_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        name: `${serverTitleSanitised}_reboot`,
+        unique_id: `${serverTitleSanitised} unraid server reboot`,
         device: serverDevice,
-        command_topic: MQTTBaseTopic + '/' + serverTitleSanitised + '/reboot',
+        command_topic: `${MQTTBaseTopic}/${serverTitleSanitised}/reboot`,
       }),
     );
-    client.subscribe(MQTTBaseTopic + '/' + serverTitleSanitised + '/reboot');
+    client.subscribe(`${MQTTBaseTopic}/${serverTitleSanitised}/reboot`);
 
     client.publish(
-      MQTTBaseTopic + '/switch/' + serverTitleSanitised + '/parityCheck/config',
+      `${MQTTBaseTopic}/switch/${serverTitleSanitised}/parityCheck/config`,
       JSON.stringify({
         payload_on: true,
         payload_off: false,
         value_template: '{{ value_json.parityCheckRunning }}',
-        state_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        name: serverTitleSanitised + '_partityCheck',
-        unique_id: serverTitleSanitised + ' unraid server parity check',
+        state_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        name: `${serverTitleSanitised}_partityCheck`,
+        unique_id: `${serverTitleSanitised} unraid server parity check`,
         device: serverDevice,
-        command_topic: MQTTBaseTopic + '/' + serverTitleSanitised + '/check',
+        command_topic: `${MQTTBaseTopic}/${serverTitleSanitised}/check`,
       }),
     );
-    client.subscribe(MQTTBaseTopic + '/' + serverTitleSanitised + '/check');
+    client.subscribe(`${MQTTBaseTopic}/${serverTitleSanitised}/check`);
 
     client.publish(
-      MQTTBaseTopic + '/switch/' + serverTitleSanitised + '/mover/config',
+      `${MQTTBaseTopic}/switch/${serverTitleSanitised}/mover/config`,
       JSON.stringify({
         payload_on: true,
         payload_off: false,
         value_template: '{{ value_json.moverRunning }}',
-        state_topic: MQTTBaseTopic + '/' + serverTitleSanitised,
-        name: serverTitleSanitised + '_mover',
-        unique_id: serverTitleSanitised + ' unraid server mover',
+        state_topic: `${MQTTBaseTopic}/${serverTitleSanitised}`,
+        name: `${serverTitleSanitised}_mover`,
+        unique_id: `${serverTitleSanitised} unraid server mover`,
         device: serverDevice,
-        command_topic: MQTTBaseTopic + '/' + serverTitleSanitised + '/move',
+        command_topic: `${MQTTBaseTopic}/${serverTitleSanitised}/move`,
       }),
     );
-    client.subscribe(MQTTBaseTopic + '/' + serverTitleSanitised + '/move');
-    client.subscribe(MQTTBaseTopic + '/' + serverTitleSanitised + '/sleep');
+    client.subscribe(`${MQTTBaseTopic}/${serverTitleSanitised}/move`);
+    client.subscribe(`${MQTTBaseTopic}/${serverTitleSanitised}/sleep`);
 
     client.publish(
-      MQTTBaseTopic + '/' + serverTitleSanitised,
+      `${MQTTBaseTopic}/${serverTitleSanitised}`,
       JSON.stringify(server.serverDetails),
     );
     updated[ip].details = JSON.stringify(server.serverDetails);
@@ -131,10 +132,10 @@ export function getServerDetails(
   if (
     server.vm &&
     server.vm.details &&
-    !disabledDevices.includes(ip + '|VMs')
+    !disabledDevices.includes(`${ip}|VMs`)
   ) {
     Object.keys(server.vm.details).forEach((vmId) => {
-      let vm = server.vm.details[vmId];
+      const vm = server.vm.details[vmId];
       setTimeout(
         getVMDetails,
         timer,
@@ -156,7 +157,7 @@ export function getServerDetails(
     server.docker &&
     server.docker.details &&
     server.docker.details.containers &&
-    !disabledDevices.includes(ip + '|Dockers')
+    !disabledDevices.includes(`${ip}|Dockers`)
   ) {
     Object.keys(server.docker.details.containers).forEach((dockerId) => {
       setTimeout(

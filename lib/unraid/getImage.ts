@@ -4,7 +4,11 @@ import { authCookies } from '../auth';
 import { ServerMap } from 'models/server';
 import { readMqttKeys } from 'lib/storage/secure';
 
-export async function getImage(servers: ServerMap, res, path: string) {
+export async function getImage(
+  servers: ServerMap,
+  res,
+  path: string,
+): Promise<void> {
   const serverAuth = await readMqttKeys();
   await logIn(servers, serverAuth);
   let sent = false;

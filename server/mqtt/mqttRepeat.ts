@@ -5,7 +5,7 @@ import { updateMQTT } from './updateMQTT';
 let repeater: NodeJS.Timeout;
 let count = 0;
 let updated = {};
-export function mqttRepeat(client: MqttClient) {
+export function mqttRepeat(client: MqttClient): void {
   const { MQTTRefreshRate } = getMqttConfig();
 
   repeater = setTimeout(

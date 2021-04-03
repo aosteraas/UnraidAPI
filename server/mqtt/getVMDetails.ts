@@ -1,17 +1,20 @@
 import { getMqttConfig } from 'lib/config';
+import { Server } from 'models/server';
+import { VmDetails } from 'models/vm';
+import { MqttClient } from 'mqtt';
 import { sanitise } from './sanitise';
 
-let updated = {};
+const updated = {};
 
 export function getVMDetails(
-  client,
-  vm,
-  disabledDevices,
-  vmId,
-  serverTitleSanitised,
-  ip,
-  server,
-) {
+  client: MqttClient,
+  vm: VmDetails,
+  disabledDevices: string,
+  vmId: string,
+  serverTitleSanitised: string,
+  ip: string,
+  server: Server,
+): void {
   if (disabledDevices.includes(`${ip}|${vmId}`)) {
     return;
   }
@@ -106,7 +109,7 @@ export function getVMDetails(
       const sanitiseUSBName = sanitise(device.name);
       const sanitiseUSBId = sanitise(device.id);
       // todo determine type?
-      let usbDetails = {
+      const usbDetails = {
         id: device.id,
         name: sanitiseUSBName,
         attached: !!device.checked,

@@ -1,3 +1,4 @@
+import { VmEdit } from 'models/vm';
 import { getCSRFToken } from '../auth';
 import { getCPUPart } from '../getCPUPart';
 import { getDiskPart } from '../getDiskPart';
@@ -11,11 +12,11 @@ export async function buildForm(
   ip: string,
   auth: string,
   id: string,
-  vmObject,
+  vmObject: VmEdit,
   create: boolean,
 ): Promise<string> {
   let form = getStaticPart(vmObject, id, create);
-  form += '&csrf_token=' + (await getCSRFToken(ip, auth));
+  form += `&csrf_token=${await getCSRFToken(ip, auth)}`;
   form = getCPUPart(vmObject, form);
   form = getDiskPart(vmObject, form);
   form = getSharePart(vmObject, form);
