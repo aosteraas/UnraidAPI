@@ -18,9 +18,9 @@ export async function scrapeMainHTML(
   try {
     const response = await axios({
       method: 'get',
-      url: (ip.includes('http') ? ip : 'http://' + ip) + '/Main',
+      url: `${ip.includes('http') ? ip : `http://${ip}`}/Main`,
       headers: {
-        Authorization: 'Basic ' + serverAuth[ip],
+        Authorization: `Basic ${serverAuth[ip]}`,
         Cookie: authCookies[ip] ? authCookies[ip] : '',
       },
     });
@@ -41,7 +41,7 @@ export async function scrapeMainHTML(
       parityCheckRunning: response.data.includes('Parity-Check in progress.'),
     };
   } catch (e) {
-    console.log('Get Main Details for ip: ' + ip + ' Failed');
+    console.log(`Get Main Details for ip: ${ip} Failed`);
     if (e.response && e.response.status) {
       callFailed(ip, e.response.status);
     } else {

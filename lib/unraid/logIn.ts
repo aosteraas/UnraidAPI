@@ -27,7 +27,7 @@ export async function logIn(
     data.append('password', details.substring(details.indexOf(':') + 1));
 
     return logInToUrl(
-      (ip.includes('http') ? ip : 'http://' + ip) + '/login',
+      `${ip.includes('http') ? ip : `http://${ip}`}/login`,
       data,
       ip,
     );

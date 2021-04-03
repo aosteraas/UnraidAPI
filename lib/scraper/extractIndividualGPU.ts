@@ -8,8 +8,8 @@ export function extractIndividualGPU(
   response: { data: string },
 ) {
   while (gpuInfo.includes("<option value='")) {
-    let row = extractValue(gpuInfo, "<option value='", '>');
-    let gpu: any = {
+    const row = extractValue(gpuInfo, "<option value='", '>');
+    const gpu: any = {
       gpu: true,
       id: row.substring(0, row.indexOf("'")),
       name: extractValue(
@@ -32,7 +32,7 @@ export function extractIndividualGPU(
       }
     }
 
-    let gpuModel = extractValue(
+    const gpuModel = extractValue(
       response.data,
       '<td>Graphics Card:</td>',
       '</table>',
@@ -41,7 +41,7 @@ export function extractIndividualGPU(
       gpu.model = extractReverseValue(
         extractValue(
           gpuModel,
-          '<select name="gpu[' + gpuNo + '][model]"',
+          `<select name="gpu[${gpuNo}][model]"`,
           'selected>',
         ),
         "'",
@@ -50,7 +50,7 @@ export function extractIndividualGPU(
       gpu.keymap = extractReverseValue(
         extractValue(
           gpuModel,
-          '<select name="gpu[' + gpuNo + '][keymap]"',
+          `<select name="gpu[${gpuNo}][keymap]"`,
           'selected>',
         ),
         "'",

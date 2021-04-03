@@ -10,7 +10,7 @@ export async function changeArrayState(
   token: string,
 ) {
   try {
-    const baseUrl = server.includes('http') ? server : 'http://' + server;
+    const baseUrl = server.includes('http') ? server : `http://${server}`;
     const cookie = authCookies.get(server) ?? '';
     const _action =
       action === 'start'

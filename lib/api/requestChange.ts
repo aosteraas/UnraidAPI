@@ -31,7 +31,7 @@ export async function requestChange(
       return response.data;
     })
     .catch((e) => {
-      console.log('Make Edit for ip: ' + ip + ' Failed');
+      console.log(`Make Edit for ip: ${ip} Failed`);
       if (e.response && e.response.status) {
         callFailed(ip, e.response.status);
       } else {

@@ -11,7 +11,7 @@ export function getVMs(servers: ServerMap, serverAuth: Record<string, string>) {
     if (!serverAuth[ip]) {
       return;
     }
-    const urlBase = ip.includes('http') ? ip : 'http://' + ip;
+    const urlBase = ip.includes('http') ? ip : `http://${ip}`;
     axios({
       method: 'GET',
       url: `${urlBase}/plugins/dynamix.vm.manager/include/VMMachines.php`,
@@ -45,7 +45,7 @@ export function getVMs(servers: ServerMap, serverAuth: Record<string, string>) {
         updateFile(servers, ip, 'vm');
       })
       .catch((e) => {
-        console.log('Get VM Details for ip: ' + ip + ' Failed');
+        console.log(`Get VM Details for ip: ${ip} Failed`);
         if (e.response && e.response.status) {
           callFailed(ip, e.response.status);
         } else {

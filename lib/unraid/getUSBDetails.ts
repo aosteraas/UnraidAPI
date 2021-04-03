@@ -37,7 +37,7 @@ export function getUSBDetails(
 
           servers[ip].usbDetails = [];
           while (response.data.toString().includes('<label for="usb')) {
-            let row = extractValue(
+            const row = extractValue(
               response.data,
               '<label for="usb',
               '</label>',
@@ -51,7 +51,7 @@ export function getUSBDetails(
           updateFile(servers, ip, 'usbDetails');
         })
         .catch((e) => {
-          console.log('Get USB Details for ip: ' + ip + ' Failed');
+          console.log(`Get USB Details for ip: ${ip} Failed`);
           if (e.response && e.response.status) {
             callFailed(ip, e.response.status);
           } else {

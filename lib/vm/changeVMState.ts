@@ -35,7 +35,7 @@ export async function changeVMState(
     }
     return response.data;
   } catch (e) {
-    console.log('Change VM State for ip: ' + server + ' Failed');
+    console.log(`Change VM State for ip: ${server} Failed`);
     if (e.response && e.response.status) {
       callFailed(server, e.response.status);
     } else {

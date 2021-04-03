@@ -2,44 +2,44 @@ import { VmEditDisk } from 'models/vm';
 import { extractReverseValue } from './extractReverseValue';
 import { extractValue } from './extractValue';
 
-export function extractDiskData(response: { data: string }) {
-  let disks: VmEditDisk[] = [];
+export function extractDiskData(response: { data: string }): VmEditDisk[] {
+  const disks: VmEditDisk[] = [];
   while (response.data.includes('id="disk_')) {
-    let row = extractValue(response.data, 'id="disk_', '>');
-    let disk = extractValue(row, '', '"');
-    let diskselect = extractReverseValue(
+    const row = extractValue(response.data, 'id="disk_', '>');
+    const disk = extractValue(row, '', '"');
+    const diskselect = extractReverseValue(
       extractValue(
         response.data,
-        '<select name="disk[' + disk + '][select]"',
+        `<select name="disk[${disk}][select]"`,
         'selected>',
       ),
       "'",
       "value='",
     );
-    let diskdriver = extractReverseValue(
+    const diskdriver = extractReverseValue(
       extractValue(
         response.data,
-        '<select name="disk[' + disk + '][driver]"',
+        `<select name="disk[${disk}][driver]"`,
         'selected>',
       ),
       "'",
       "value='",
     );
-    let diskbus = extractReverseValue(
+    const diskbus = extractReverseValue(
       extractValue(
         response.data,
-        '<select name="disk[' + disk + '][bus]"',
+        `<select name="disk[${disk}][bus]"`,
         'selected>',
       ),
       "'",
       "value='",
     );
-    let disksize = extractValue(
+    const disksize = extractValue(
       response.data,
-      'name="disk[' + disk + '][size]" value="',
+      `name="disk[${disk}][size]" value="`,
       '"',
     );
-    let diskpath = extractValue(row, 'value="', '"');
+    const diskpath = extractValue(row, 'value="', '"');
     if (diskpath) {
       disks.push({
         select: diskselect,

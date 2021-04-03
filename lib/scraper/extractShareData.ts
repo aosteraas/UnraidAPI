@@ -1,7 +1,7 @@
 import { extractValue } from './extractValue';
 
 export function extractShareData(response: { data: string }) {
-  let shares = [];
+  const shares = [];
   response.data.replace(
     '<script type="text/html" id="tmplShare">\n' +
       '                                                                                <table class="domain_os other">\n' +
@@ -11,12 +11,12 @@ export function extractShareData(response: { data: string }) {
   );
 
   while (response.data.includes('<td>Unraid Share:</td>')) {
-    let sourceRow = extractValue(
+    const sourceRow = extractValue(
       response.data,
       '<td>Unraid Share:</td>',
       '</td>',
     );
-    let targetRow = extractValue(
+    const targetRow = extractValue(
       response.data,
       '<td>Unraid Mount tag:</td>',
       '</td>',

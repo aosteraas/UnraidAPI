@@ -22,14 +22,14 @@ export async function scrapeHTML(
   try {
     const response = await axios({
       method: 'get',
-      url: (ip.includes('http') ? ip : 'http://' + ip) + '/Dashboard',
+      url: `${ip.includes('http') ? ip : `http://${ip}`}/Dashboard`,
       headers: {
         Authorization: `Basic ${serverAuth[ip]}`,
         Cookie: authCookies.get(ip) ?? '',
       },
     });
     callSucceeded(ip);
-    let details = {
+    const details = {
       title: extractValue(response.data, 'title>', '/'),
       cpu: extractReverseValue(
         extractValue(response.data, "cpu_view'>", '</tr'),
