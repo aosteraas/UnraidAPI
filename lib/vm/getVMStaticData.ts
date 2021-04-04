@@ -1,5 +1,4 @@
-import { extractValue } from 'lib/scraper';
-import { extractReverseValue } from 'lib/scraper/extractReverseValue';
+import { extractValue, extractReverseValue } from 'lib/scraper';
 
 export function getVMStaticData(response) {
   return {

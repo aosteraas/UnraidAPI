@@ -9,3 +9,5 @@ export * from './getServerDetails';
 export * from './getSharePart';
 export * from './changeServerState';
 export * from './getUnraidDetails';
+
+export * from './unraidApi';

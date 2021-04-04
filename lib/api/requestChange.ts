@@ -1,10 +1,10 @@
-import axios from 'axios';
 import http from 'http';
 import { callFailed } from './callFailed';
 import { callSucceeded } from './callSucceeded';
 import { buildForm } from './buildForm';
 import { authCookies } from 'lib/auth';
 import { VmEdit } from 'models/vm';
+import { unraidApi } from 'lib/unraid';
 
 export async function requestChange(
   ip: string,
@@ -14,7 +14,7 @@ export async function requestChange(
   create: boolean,
 ): Promise<any> {
   const urlBase = ip.includes('http') ? ip : `http://${ip}`;
-  return axios({
+  return unraidApi({
     method: 'POST',
     url: `${urlBase}/plugins/dynamix.vm.manager/templates/Custom.form.php`,
     headers: {

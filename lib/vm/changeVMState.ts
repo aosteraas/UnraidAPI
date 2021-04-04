@@ -1,7 +1,7 @@
-import axios from 'axios';
 import http from 'http';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
+import { unraidApi } from 'lib/unraid';
 
 export async function changeVMState(
   id: string,
@@ -13,7 +13,7 @@ export async function changeVMState(
   try {
     const urlBase = server.includes('http') ? server : `http://${server}`;
     const path = '/plugins/dynamix.vm.manager/include/VMajax.php';
-    const response = await axios({
+    const response = await unraidApi({
       method: 'POST',
       url: urlBase + path,
       headers: {

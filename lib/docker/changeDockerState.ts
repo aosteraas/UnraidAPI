@@ -1,7 +1,7 @@
-import axios from 'axios';
 import http from 'http';
 import { callFailed, callSucceeded } from 'lib/api';
 import { authCookies } from 'lib/auth';
+import { unraidApi } from 'lib/unraid';
 
 export async function changeDockerState(
   id: string,
@@ -12,7 +12,7 @@ export async function changeDockerState(
 ): Promise<any> {
   try {
     const urlBase = server.includes('http') ? server : `http://${server}`;
-    const response = await axios({
+    const response = await unraidApi({
       method: 'POST',
       url: `${urlBase}/plugins/dynamix.docker.manager/include/Events.php`,
       headers: {

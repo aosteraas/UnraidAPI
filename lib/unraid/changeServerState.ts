@@ -1,6 +1,6 @@
-import axios from 'axios';
 import http from 'http';
 import { authCookies } from 'lib/auth';
+import { unraidApi } from './unraidApi';
 
 export type Action =
   | 'shutdown'
@@ -30,7 +30,7 @@ export async function changeServerState(
   switch (action) {
     case 'shutdown':
       try {
-        await axios({
+        await unraidApi({
           method: 'POST',
           url: `${urlBase}/webGui/include/Boot.php`,
           headers,
@@ -44,7 +44,7 @@ export async function changeServerState(
       }
     case 'reboot':
       try {
-        await axios({
+        await unraidApi({
           method: 'POST',
           url: `${urlBase}/webGui/include/Boot.php`,
           headers,
@@ -58,7 +58,7 @@ export async function changeServerState(
       }
     case 'move':
       try {
-        await axios({
+        await unraidApi({
           method: 'POST',
           url: `${urlBase}/update.htm`,
           headers,
@@ -72,7 +72,7 @@ export async function changeServerState(
       }
     case 'check':
       try {
-        await axios({
+        await unraidApi({
           method: 'POST',
           url: `${urlBase}/update.htm`,
           headers,
@@ -86,7 +86,7 @@ export async function changeServerState(
       }
     case 'check-cancel':
       try {
-        await axios({
+        await unraidApi({
           method: 'POST',
           url: `${urlBase}/update.htm`,
           headers,
@@ -100,7 +100,7 @@ export async function changeServerState(
       }
     case 'sleep':
       try {
-        await axios({
+        await unraidApi({
           method: 'GET',
           url: `${urlBase}/plugins/dynamix.s3.sleep/include/SleepMode.php`,
           headers,

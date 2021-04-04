@@ -1,10 +1,10 @@
-import axios from 'axios';
 import http from 'http';
+import { unraidApi } from 'lib/unraid/unraidApi';
 import { authCookies } from '.';
 
 export async function logInToUrl(url: string, data, ip: string): Promise<any> {
   try {
-    const resp = await axios({
+    const resp = await unraidApi({
       url,
       method: 'POST',
       data,

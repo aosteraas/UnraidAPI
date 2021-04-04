@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { authCookies } from './authCookies';
 import { callSucceeded, callFailed } from 'lib/api';
 import { extractValue } from 'lib/scraper';
+import { unraidApi } from 'lib/unraid';
 
 export async function getCSRFToken(
   server: string,
@@ -11,7 +11,7 @@ export async function getCSRFToken(
     const baseUrl = server.includes('http') ? server : `http://${server}`;
     const cookie = authCookies.get(server) ?? '';
 
-    const response = await axios({
+    const response = await unraidApi({
       method: 'GET',
       url: `${baseUrl}/Dashboard`,
       headers: {

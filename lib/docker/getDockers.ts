@@ -1,10 +1,10 @@
-import axios from 'axios';
 import { ServerMap } from 'models/server';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
 import { parseHTML } from 'lib/scraper';
 import { updateFile } from 'lib/storage';
 import { processDockerResponse } from './processDockerResponse';
+import { unraidApi } from 'lib/unraid';
 
 export function getDockers(
   servers: ServerMap,
@@ -20,7 +20,7 @@ export function getDockers(
       ip.includes('http') ? ip : `http://${ip}`
     }/plugins/dynamix.docker.manager/include/DockerContainers.php`;
 
-    axios({
+    unraidApi({
       method: 'get',
       url,
       headers: {

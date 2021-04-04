@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { extractDiskDetails } from './extractDiskDetails';
 import { authCookies } from 'lib/auth';
 import { extractValue } from './extractValue';
 import { extractReverseValue } from './extractReverseValue';
 import { callFailed, callSucceeded } from 'lib/api';
+import { unraidApi } from 'lib/unraid';
 
 interface ServerCoreDetails {
   title: string;
@@ -20,7 +20,7 @@ export async function scrapeHTML(
   serverAuth: Record<string, string>,
 ): Promise<ServerCoreDetails | undefined> {
   try {
-    const response = await axios({
+    const response = await unraidApi({
       method: 'get',
       url: `${ip.includes('http') ? ip : `http://${ip}`}/Dashboard`,
       headers: {

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { parseServers } from 'lib/storage';
 import { VmDetails } from 'models/vm';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
 import { extractVMDetails } from 'lib/scraper';
+import { unraidApi } from 'lib/unraid';
 
 export async function gatherDetailsFromEditVM(
   ip: string,
@@ -17,7 +17,7 @@ export async function gatherDetailsFromEditVM(
   }
   try {
     const urlBase = ip.includes('http') ? ip : `http://${ip}`;
-    const response = await axios({
+    const response = await unraidApi({
       method: 'GET',
       url: `${urlBase}/VMs/UpdateVM?uuid=${id}`,
       headers: {

@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { extractValue } from './extractValue';
 import { extractReverseValue } from './extractReverseValue';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
+import { unraidApi } from 'lib/unraid';
 
 interface ServerMainDetails {
   arrayStatus: string;
@@ -16,7 +16,7 @@ export async function scrapeMainHTML(
   serverAuth: Record<string, string>,
 ): Promise<ServerMainDetails | undefined> {
   try {
-    const response = await axios({
+    const response = await unraidApi({
       method: 'get',
       url: `${ip.includes('http') ? ip : `http://${ip}`}/Main`,
       headers: {

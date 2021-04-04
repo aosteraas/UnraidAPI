@@ -1,10 +1,10 @@
-import axios from 'axios';
 import { ServerMap } from 'models/server';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
 import { parseHTML } from 'lib/scraper';
 import { updateFile } from '../storage/updateFile';
 import { processVMResponse } from './processVMResponse';
+import { unraidApi } from 'lib/unraid';
 
 export function getVMs(servers: ServerMap, serverAuth: Record<string, string>) {
   Object.keys(servers).forEach((ip) => {
@@ -12,7 +12,7 @@ export function getVMs(servers: ServerMap, serverAuth: Record<string, string>) {
       return;
     }
     const urlBase = ip.includes('http') ? ip : `http://${ip}`;
-    axios({
+    unraidApi({
       method: 'GET',
       url: `${urlBase}/plugins/dynamix.vm.manager/include/VMMachines.php`,
       headers: {

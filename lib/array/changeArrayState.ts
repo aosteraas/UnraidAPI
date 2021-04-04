@@ -1,7 +1,7 @@
-import axios from 'axios';
 import http from 'http';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
+import { unraidApi } from 'lib/unraid';
 
 export async function changeArrayState(
   action: string,
@@ -17,7 +17,7 @@ export async function changeArrayState(
         ? `startState=STOPPED&file=&csrf_token=${token}&cmdStart=Start`
         : `startState=STARTED&file=&csrf_token=${token}&cmdStop=Stop`;
 
-    const response = await axios({
+    const response = await unraidApi({
       method: 'POST',
       url: `${baseUrl}/update.htm`,
       headers: {

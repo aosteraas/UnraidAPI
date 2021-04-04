@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { ServerMap } from 'models/server';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
 import { extractValue } from 'lib/scraper';
 import { updateFile } from 'lib/storage';
+import { unraidApi } from './unraidApi';
 
 export function getUSBDetails(
   servers: ServerMap,
@@ -20,7 +20,7 @@ export function getUSBDetails(
     ) {
       const urlBase = ip.includes('http') ? ip : `http://${ip}`;
       const basePath = '/VMs/UpdateVM?uuid=';
-      axios({
+      unraidApi({
         method: 'get',
         url:
           urlBase +
