@@ -9,8 +9,8 @@ interface VmStatusBody {
   server: string;
   auth: string;
 }
-
-export default async function (
+// changeVMStatus
+async function changeVMStatus(
   { body }: ApiBodyRequest<VmStatusBody>,
   res: NextApiResponse,
 ): Promise<void> {
@@ -22,3 +22,5 @@ export default async function (
     res.send(response);
   }
 }
+
+export default changeVMStatus;

@@ -1,6 +1,11 @@
 import { DockerImage } from 'models/docker';
 
-export function processDockerResponse(details) {
+export function processDockerResponse(
+  details,
+): {
+  images: Record<string, DockerImage>;
+  containers: any;
+} {
   const images: Record<string, DockerImage> = {};
   const containers: any = {};
   details.forEach((row) => {

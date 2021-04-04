@@ -1,6 +1,6 @@
 import axios from 'axios';
 import http from 'http';
-import { authCookies } from './auth';
+import { authCookies } from 'lib/auth';
 
 export type Action =
   | 'shutdown'
@@ -15,7 +15,7 @@ export async function changeServerState(
   server: string,
   auth: string,
   token: string,
-) {
+): Promise<{ success: boolean }> {
   const urlBase = server.includes('http') ? server : `http://${server}`;
 
   const cookie = authCookies.get(server) ?? '';

@@ -9,8 +9,8 @@ interface DockerBody {
   server: string;
   auth: string;
 }
-
-export default async function (
+// changeDockerStatus
+async function changeDockerStatus(
   { body }: ApiBodyRequest<DockerBody | undefined>,
   res: NextApiResponse,
 ): Promise<void> {
@@ -27,3 +27,5 @@ export default async function (
     res.send(response);
   }
 }
+
+export default changeDockerStatus;

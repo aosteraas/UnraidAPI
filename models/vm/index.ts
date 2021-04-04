@@ -35,6 +35,8 @@ export interface VmHddAllocation {
   used: string;
 }
 
+export type PciType = GpuVncDetail | GpuPciDetail | SoundPciDetail;
+
 export interface VmEdit {
   description: string;
   template_os: string;
@@ -63,7 +65,7 @@ export interface VmEdit {
   vcpus: number[];
   disks: VmEditDisk[];
   shares: VmEditShare[];
-  pcis: (GpuVncDetail | GpuPciDetail | SoundPciDetail)[];
+  pcis: PciType[];
   nics: VmEditNic[];
   usbs: VmEditUsbs[];
 }

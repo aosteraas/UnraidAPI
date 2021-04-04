@@ -3,7 +3,7 @@ import http from 'http';
 import { callFailed } from './callFailed';
 import { callSucceeded } from './callSucceeded';
 import { buildForm } from './buildForm';
-import { authCookies } from '../auth';
+import { authCookies } from 'lib/auth';
 import { VmEdit } from 'models/vm';
 
 export async function requestChange(

@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import { getCSRFToken } from 'lib/auth';
 import { ApiBodyRequest } from 'models/api';
-import { changeServerState, Action } from 'lib/changeServerState';
+import { changeServerState, Action } from 'lib/unraid';
 
 interface ServerStatusBody {
   action: Action;
@@ -9,7 +9,7 @@ interface ServerStatusBody {
   auth: string;
 }
 
-export default async function (
+async function changeServerStatus(
   { body }: ApiBodyRequest<ServerStatusBody>,
   res: NextApiResponse,
 ): Promise<void> {
@@ -21,3 +21,5 @@ export default async function (
     res.send(response);
   }
 }
+
+export default changeServerStatus;

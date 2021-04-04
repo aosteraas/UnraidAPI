@@ -3,9 +3,9 @@ import { isAnyClosingTag } from './isAnyClosingTag';
 import { isRemaining } from './isRemaining';
 
 export function parseHTML(html: string) {
-  let parsedHtml = [];
+  const parsedHtml = [];
   while (isRemaining(html)) {
-    let result = parseTag(
+    const result = parseTag(
       html.substring(html.indexOf('<'), html.indexOf('>') + 1),
       html,
     );

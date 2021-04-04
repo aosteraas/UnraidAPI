@@ -1,4 +1,4 @@
-import mqtt, { Packet } from 'mqtt';
+import mqtt from 'mqtt';
 import fs from 'fs';
 import uniqid from 'uniqid';
 import { Server } from 'models/server';
@@ -10,14 +10,12 @@ import { sanitise } from './sanitise';
 import { getServerDetails } from './getServerDetails';
 import { getDockerDetails } from './getDockerDetails';
 import { getVMDetails } from './getVMDetails';
-import { getCSRFToken } from 'lib/auth/getCSRFToken';
-import { changeVMState } from 'lib/vm/changeVMState';
-import { changeArrayState } from 'lib/changeArrayState';
-import { changeDockerState } from 'lib/docker/changeDockerState';
-import { changeServerState } from 'lib/changeServerState';
-import { attachUSB, detachUSB } from 'lib/vm/attachUSB';
-import { readMqttKeys } from 'lib/storage/secure';
-import { parseServers } from 'lib/storage/servers';
+import { getCSRFToken } from 'lib/auth';
+import { changeVMState, attachUSB, detachUSB } from 'lib/vm';
+import { changeArrayState } from 'lib/array';
+import { changeDockerState } from 'lib/docker';
+import { changeServerState } from 'lib/unraid';
+import { parseServers, readMqttKeys } from 'lib/storage';
 import { getMqttConfig } from 'lib/config';
 
 let retry;
@@ -25,7 +23,7 @@ let retry;
 let updated = {};
 let repeater;
 
-export function startMQTTClient() {
+export function startMQTTClient(): void {
   try {
     const haOptions = JSON.parse(
       fs.readFileSync('/data/options.json').toString(),
@@ -67,7 +65,7 @@ export function startMQTTClient() {
   try {
     client.on(
       'connect',
-      (packet: Packet) => {
+      () => {
         console.log('Connected to mqtt broker');
         client.subscribe(`${MQTTBaseTopic}/bridge/state`);
         updateMQTT(client);

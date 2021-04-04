@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { ServerMap } from 'models/server';
-import { callSucceeded, callFailed } from '../api';
-import { authCookies } from '../auth';
-import { parseHTML } from '../scraper';
+import { callSucceeded, callFailed } from 'lib/api';
+import { authCookies } from 'lib/auth';
+import { parseHTML } from 'lib/scraper';
 import { updateFile } from '../storage/updateFile';
 import { processVMResponse } from './processVMResponse';
 

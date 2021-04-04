@@ -1,6 +1,6 @@
 import { ServerMap } from 'models/server';
-import { scrapeHTML, scrapeMainHTML } from '../scraper';
-import { updateFile } from '../storage/updateFile';
+import { scrapeHTML, scrapeMainHTML } from 'lib/scraper';
+import { updateFile } from 'lib/storage';
 
 export function getServerDetails(
   servers: ServerMap,

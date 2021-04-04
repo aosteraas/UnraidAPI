@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { parseServers } from 'lib/storage/servers';
+import { parseServers } from 'lib/storage';
 import { VmDetails } from 'models/vm';
-import { callSucceeded, callFailed } from '../api';
-import { authCookies } from '../auth';
-import { extractVMDetails } from '../scraper/extractVMDetails';
+import { callSucceeded, callFailed } from 'lib/api';
+import { authCookies } from 'lib/auth';
+import { extractVMDetails } from 'lib/scraper';
 
 export async function gatherDetailsFromEditVM(
   ip: string,

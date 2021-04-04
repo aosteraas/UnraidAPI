@@ -1,17 +1,17 @@
 import fs from 'fs';
 import { extractValue } from './extractValue';
-import { UsbDetail } from '../../models/usb';
+import { UsbDetail } from 'models/usb';
 
 export function extractUSBData(
   response: { data: string },
   vmObject,
   ip: string,
-) {
-  let usbs: UsbDetail[] = [];
+): UsbDetail[] {
+  const usbs: UsbDetail[] = [];
   let usbInfo = extractValue(response.data, '<td>USB Devices:</td>', '</td>');
   while (usbInfo.includes('value="')) {
-    let row = extractValue(usbInfo, 'value="', ' (');
-    let usb: UsbDetail = {
+    const row = extractValue(usbInfo, 'value="', ' (');
+    const usb: UsbDetail = {
       checked: row.includes('checked'),
       id: row.substring(0, row.indexOf('"')),
       name: row.substring(row.indexOf('/') + 3),
@@ -21,8 +21,8 @@ export function extractUSBData(
 
     usbInfo = usbInfo.replace('value="', '');
   }
-  let rawdata = fs.readFileSync('config/servers.json').toString();
-  let servers = JSON.parse(rawdata);
+  const rawdata = fs.readFileSync('config/servers.json').toString();
+  const servers = JSON.parse(rawdata);
   let oldUsbs = [];
   if (
     servers[ip].vm &&

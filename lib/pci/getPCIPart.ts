@@ -1,4 +1,4 @@
-export function getPCIPart(vmObject, form: string) {
+export function getPCIPart(vmObject, form: string): string {
   let audioDevices = 0;
   let gpus = 0;
   if (vmObject.pcis && vmObject.pcis.length > 0) {
@@ -23,9 +23,9 @@ export function getPCIPart(vmObject, form: string) {
         )}`;
         audioDevices++;
       } else {
-        form +=
-          `&pci%5B%5D=${encodeURI(pciDevice.id)}` +
-          (pciDevice.checked ? '' : '%23remove');
+        form += `&pci%5B%5D=${encodeURI(pciDevice.id)}${
+          pciDevice.checked ? '' : '%23remove'
+        }`;
       }
     });
   }

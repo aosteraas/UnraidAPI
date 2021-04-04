@@ -1,7 +1,7 @@
 import axios from 'axios';
 import http from 'http';
-import { callSucceeded, callFailed } from '../api';
-import { authCookies } from '../auth';
+import { callSucceeded, callFailed } from 'lib/api';
+import { authCookies } from 'lib/auth';
 
 export async function changeVMState(
   id: string,

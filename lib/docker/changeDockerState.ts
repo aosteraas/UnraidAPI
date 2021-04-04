@@ -1,7 +1,7 @@
 import axios from 'axios';
 import http from 'http';
-import { callFailed, callSucceeded } from '../api';
-import { authCookies } from '../auth';
+import { callFailed, callSucceeded } from 'lib/api';
+import { authCookies } from 'lib/auth';
 
 export async function changeDockerState(
   id: string,
@@ -9,7 +9,7 @@ export async function changeDockerState(
   server: string,
   auth: string,
   token: string,
-) {
+): Promise<any> {
   try {
     const urlBase = server.includes('http') ? server : `http://${server}`;
     const response = await axios({

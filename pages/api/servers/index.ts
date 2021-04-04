@@ -1,14 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUnraidDetails } from 'lib/getUnraidDetails';
-import { parseServers } from 'lib/storage/servers';
+import { getUnraidDetails } from 'lib/unraid';
+import { parseServers, readMqttKeys } from 'lib/storage';
 import { getKeyStorage } from 'lib/config';
-import { readMqttKeys } from 'lib/storage/secure';
 
-// function getDockerDetails (req: NextApiRequest, res: NextApiResponse) {
-//   const
-// }
-
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+// getServers
+async function getServers(
+  req: NextApiRequest,
+  res: NextApiResponse,
+): Promise<void> {
   const keyStorage = getKeyStorage();
   const authHeader = req.headers.authorization;
   const servers = await parseServers();
@@ -38,3 +37,5 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   response.status = 200;
   res.send(response);
 }
+
+export default getServers;

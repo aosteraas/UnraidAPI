@@ -1,10 +1,10 @@
-import { getUSBDetails } from './unraid/getUSBDetails';
-import { getPCIDetails } from './unraid/getPCIDetails';
-import { logIn } from './unraid/logIn';
-import { getServerDetails } from './unraid/getServerDetails';
-import { getDockers } from './docker/getDockers';
-import { getVMs } from './vm/getVMs';
+import { getUSBDetails } from './getUSBDetails';
+import { logIn } from './logIn';
+import { getServerDetails } from './getServerDetails';
+import { getDockers } from 'lib/docker';
+import { getVMs } from 'lib/vm/getVMs';
 import { ServerMap } from 'models/server';
+import { getPCIDetails } from 'lib/pci';
 
 export async function getUnraidDetails(
   servers: ServerMap,

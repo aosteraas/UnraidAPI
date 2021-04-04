@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authCookies } from './authCookies';
-import { callSucceeded, callFailed } from '../api';
-import { extractValue } from '../scraper';
+import { callSucceeded, callFailed } from 'lib/api';
+import { extractValue } from 'lib/scraper';
 
 export async function getCSRFToken(
   server: string,

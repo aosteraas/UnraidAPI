@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { extractDiskDetails } from './extractDiskDetails';
-import { authCookies } from '../auth';
+import { authCookies } from 'lib/auth';
 import { extractValue } from './extractValue';
 import { extractReverseValue } from './extractReverseValue';
-import { callFailed, callSucceeded } from '../api';
+import { callFailed, callSucceeded } from 'lib/api';
 
 interface ServerCoreDetails {
   title: string;

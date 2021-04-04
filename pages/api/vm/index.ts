@@ -2,6 +2,7 @@ import { requestChange } from 'lib/api/requestChange';
 import { getCSRFToken } from 'lib/auth';
 import { changeVMState } from 'lib/vm/changeVMState';
 
+// createVM
 export default async function (req, res, next): Promise<void> {
   if (req.body) {
     const response = {

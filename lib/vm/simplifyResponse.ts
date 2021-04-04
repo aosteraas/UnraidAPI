@@ -1,5 +1,5 @@
 import { gatherDetailsFromEditVM } from './gatherDetailsFromEditVM';
-import { VmDetails } from '../../models/vm';
+import { VmDetails } from 'models/vm';
 
 export async function simplifyResponse(
   object,

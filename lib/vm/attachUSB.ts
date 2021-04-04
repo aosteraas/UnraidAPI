@@ -1,6 +1,6 @@
 import { gatherDetailsFromEditVM } from './gatherDetailsFromEditVM';
-import { requestChange } from '../api/requestChange';
-import { VmAttachUsbs, VmDetails, VmEdit } from '../../models/vm';
+import { requestChange } from 'lib/api/requestChange';
+import { VmAttachUsbs, VmDetails, VmEdit } from 'models/vm';
 import { parseServers } from 'lib/storage/servers';
 import { UsbBody } from 'models/api';
 

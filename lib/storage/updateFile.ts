@@ -5,7 +5,7 @@ export function updateFile(servers: ServerMap, ip: string, tag: string) {
   let oldServers = {};
 
   try {
-    let rawdata = fs.readFileSync('config/servers.json').toString();
+    const rawdata = fs.readFileSync('config/servers.json').toString();
     oldServers = JSON.parse(rawdata);
   } catch (e) {
     console.log(e);

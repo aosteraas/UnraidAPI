@@ -1,7 +1,8 @@
 import { parseServers, writeServersJson } from 'lib/storage/servers';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function (
+// deleteServer
+async function deleteServer(
   req: NextApiRequest,
   res: NextApiResponse,
 ): Promise<void> {
@@ -19,3 +20,5 @@ async function deleteIP(ip: string) {
   servers[ip] = undefined;
   await writeServersJson(servers);
 }
+
+export default deleteServer;

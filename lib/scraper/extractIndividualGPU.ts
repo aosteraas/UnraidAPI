@@ -6,7 +6,7 @@ export function extractIndividualGPU(
   gpuNo: number,
   vmObject,
   response: { data: string },
-) {
+): void {
   while (gpuInfo.includes("<option value='")) {
     const row = extractValue(gpuInfo, "<option value='", '>');
     const gpu: any = {

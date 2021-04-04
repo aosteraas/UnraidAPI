@@ -1,12 +1,13 @@
 import fetch from 'node-fetch';
 import { logIn } from './logIn';
-import { authCookies } from '../auth';
+import { authCookies } from 'lib/auth';
 import { ServerMap } from 'models/server';
-import { readMqttKeys } from 'lib/storage/secure';
+import { readMqttKeys } from 'lib/storage';
+import { NextApiResponse } from 'next';
 
 export async function getImage(
   servers: ServerMap,
-  res,
+  res: NextApiResponse,
   path: string,
 ): Promise<void> {
   const serverAuth = await readMqttKeys();
@@ -32,13 +33,15 @@ export async function getImage(
         if (!sent) {
           sent = true;
           try {
-            res.set({ 'content-type': 'image/png' });
+            res.setHeader('content-type', 'image/png');
             res.send(buffer);
-          } catch (e) {}
+          } catch (e) {
+            console.error(e);
+          }
         }
       })
       .catch((err) => {
-        // console.log(err);
+        console.log(err);
       });
   });
 }

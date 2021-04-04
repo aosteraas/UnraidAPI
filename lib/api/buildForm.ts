@@ -1,12 +1,14 @@
+import { getCSRFToken } from 'lib/auth';
+import {
+  getCPUPart,
+  getStaticPart,
+  getUSBPart,
+  getDiskPart,
+  getNetworkPart,
+  getSharePart,
+} from 'lib/unraid';
+import { getPCIPart } from 'lib/pci';
 import { VmEdit } from 'models/vm';
-import { getCSRFToken } from '../auth';
-import { getCPUPart } from '../getCPUPart';
-import { getDiskPart } from '../getDiskPart';
-import { getNetworkPart } from '../getNetworkPart';
-import { getPCIPart } from '../getPCIPart';
-import { getSharePart } from '../getSharePart';
-import { getStaticPart } from '../getStaticPart';
-import { getUSBPart } from '../getUSBPart';
 
 export async function buildForm(
   ip: string,

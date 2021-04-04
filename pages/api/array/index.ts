@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import { ApiBodyRequest } from 'models/api';
 import { getCSRFToken } from 'lib/auth';
-import { changeArrayState } from 'lib/changeArrayState';
+import { changeArrayState } from 'lib/array';
 
 interface ArrayBody {
   server: string;
@@ -9,7 +9,8 @@ interface ArrayBody {
   action: string;
 }
 
-export default async function (
+// changeArrayStatus
+async function changeArrayStatus(
   req: ApiBodyRequest<ArrayBody | undefined>,
   res: NextApiResponse,
 ): Promise<void> {
@@ -24,3 +25,5 @@ export default async function (
     res.send(response);
   }
 }
+
+export default changeArrayStatus;

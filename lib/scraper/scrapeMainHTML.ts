@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { extractValue } from './extractValue';
 import { extractReverseValue } from './extractReverseValue';
-import { callSucceeded, callFailed } from '../api';
-import { authCookies } from '../auth';
+import { callSucceeded, callFailed } from 'lib/api';
+import { authCookies } from 'lib/auth';
 
 interface ServerMainDetails {
   arrayStatus: string;

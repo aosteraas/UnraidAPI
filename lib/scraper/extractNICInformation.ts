@@ -2,17 +2,17 @@ import { VmEditNic } from 'models/vm';
 import { extractReverseValue } from './extractReverseValue';
 import { extractValue } from './extractValue';
 
-export function extractNICInformation(response: { data: string }) {
+export function extractNICInformation(response: { data: string }): VmEditNic[] {
   let nicInfo = extractValue(
     response.data,
     '<table data-category="Network" data-multiple="true"',
     '</table>',
   );
-  let nicNo = 0;
+  const nicNo = 0;
 
-  let nics: VmEditNic[] = [];
+  const nics: VmEditNic[] = [];
   while (nicInfo.includes('<td>Network MAC:</td>')) {
-    let nic = {
+    const nic = {
       mac: '',
       network: '',
     };

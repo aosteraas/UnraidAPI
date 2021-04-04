@@ -1,9 +1,11 @@
 import { MqttClient } from 'mqtt';
 import { getServerDetails } from './getServerDetails';
-import { keyStorageChecker } from 'lib/storage/secure';
-import { getUnraidDetails } from 'lib/getUnraidDetails';
-import { parseServers } from 'lib/storage/servers';
-import { readDisabledDevices } from 'lib/storage/devices';
+import {
+  keyStorageChecker,
+  parseServers,
+  readDisabledDevices,
+} from 'lib/storage/';
+import { getUnraidDetails } from 'lib/unraid';
 import { getMqttConfig } from 'lib/config';
 
 export async function updateMQTT(client: MqttClient): Promise<void> {

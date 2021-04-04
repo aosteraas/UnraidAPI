@@ -1,4 +1,4 @@
-export function extractDiskDetails(details, tag: string, name: string) {
+export function extractDiskDetails(details, tag: string, name: string): void {
   if (details[tag].includes(' used of ')) {
     const diskDetails = details[tag].split(' used of ');
 

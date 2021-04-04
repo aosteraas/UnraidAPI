@@ -1,6 +1,11 @@
 import { extractValue } from './extractValue';
 
-export function extractShareData(response: { data: string }) {
+interface ShareData {
+  source: string;
+  target: string;
+}
+
+export function extractShareData(response: { data: string }): ShareData[] {
   const shares = [];
   response.data.replace(
     '<script type="text/html" id="tmplShare">\n' +
