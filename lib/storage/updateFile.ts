@@ -1,19 +1,19 @@
-import fs from 'fs';
 import { ServerMap } from 'models/server';
+import { parseServers, writeServersJson } from './servers';
 
-export function updateFile(servers: ServerMap, ip: string, tag: string) {
-  let oldServers = {};
-
+export async function updateFile(
+  servers: ServerMap,
+  ip: string,
+  tag: string,
+): Promise<void> {
   try {
-    const rawdata = fs.readFileSync('config/servers.json').toString();
-    oldServers = JSON.parse(rawdata);
-  } catch (e) {
-    console.log(e);
-  } finally {
+    const oldServers = await parseServers();
     if (!oldServers[ip]) {
       oldServers[ip] = {};
     }
     oldServers[ip][tag] = servers[ip][tag];
-    fs.writeFileSync('config/servers.json', JSON.stringify(oldServers));
+    await writeServersJson(oldServers);
+  } catch (e) {
+    console.log(e);
   }
 }

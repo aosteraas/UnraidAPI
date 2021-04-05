@@ -5,9 +5,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
-    // add more generic rulesets here, such as:
-    // 'eslint:recommended',
-    // 'plugin:vue/recommended'
+    'prettier',
   ],
   env: {
     es6: true,

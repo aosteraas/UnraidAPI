@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { Flex } from '@chakra-ui/react';
-import { ServerDetails, ServerSetup } from 'components';
+import { Servers, ServerSetup } from 'components';
 
 function Home(): JSX.Element {
   return (
@@ -10,7 +10,7 @@ function Home(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ServerSetup />
-      <ServerDetails />
+      <Servers />
     </Flex>
   );
 }

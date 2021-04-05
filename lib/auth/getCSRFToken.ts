@@ -8,6 +8,7 @@ export async function getCSRFToken(
   auth: string,
 ): Promise<string> {
   try {
+    // todo update this to read from mqtt keys for auth header
     const baseUrl = server.includes('http') ? server : `http://${server}`;
     const cookie = authCookies.get(server) ?? '';
 

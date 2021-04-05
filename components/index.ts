@@ -1,2 +1,2 @@
 export * from './ServerSetup';
-export * from './ServerDetails';
+export * from './Servers';
