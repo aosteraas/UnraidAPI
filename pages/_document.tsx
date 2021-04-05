@@ -1,8 +1,8 @@
-import NextDocument, { Html, Head, Main, NextScript } from 'next/document'
-import { ColorModeScript } from '@chakra-ui/react'
+import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
+import { ColorModeScript } from '@chakra-ui/react';
 
-export default class Document extends NextDocument {
-  render() {
+class UnraidApiDocument extends NextDocument {
+  render(): JSX.Element {
     return (
       <Html>
         <Head />
@@ -13,6 +13,7 @@ export default class Document extends NextDocument {
           <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
+export default UnraidApiDocument;
