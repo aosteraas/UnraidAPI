@@ -1,7 +1,7 @@
 import mqtt from 'mqtt';
 import fs from 'fs';
 import uniqid from 'uniqid';
-import { Server } from 'models/server';
+import { UnraidServer } from 'models/server';
 import { VmDetails } from 'models/vm';
 import { DockerContainer } from 'models/docker';
 import { updateMQTT } from './updateMQTT';
@@ -98,13 +98,13 @@ export function startMQTTClient(): void {
 
       const topicParts = topic.split('/');
       let ip = '';
-      let serverDetails: Server = {
+      let serverDetails: UnraidServer = {
         serverDetails: { on: false },
         usbDetails: [],
       };
 
       let serverTitleSanitised = '';
-      for (const [serverIp, server] of Object.entries<Server>(servers)) {
+      for (const [serverIp, server] of Object.entries<UnraidServer>(servers)) {
         if (
           server.serverDetails &&
           sanitise(server.serverDetails.title) === topicParts[1]

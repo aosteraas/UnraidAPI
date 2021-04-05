@@ -6,7 +6,7 @@ import { keyStorageChecker, writeMqttKeys } from 'lib/storage/secure';
 export default async function (
   req: ApiBodyRequest<LoginBody>,
   res: NextApiResponse,
-) {
+): Promise<void> {
   const response = await storeServerDetails(req.body);
   res.send(response);
 }
@@ -33,7 +33,11 @@ async function storeServerDetails({ ip, user, password }: LoginBody) {
 
     const authToken = Buffer.from(`${user}:${password}`).toString('base64');
     keys[ip] = authToken;
-
+    // Temporary to add IP into server data so it's available when data in array
+    // without access to keys
+    Object.keys(servers).map((ip) => {
+      servers[ip].ip = ip;
+    });
     await Promise.all([writeMqttKeys(keys), writeServersJson(servers)]);
 
     response.message = 'Connected';

@@ -20,15 +20,16 @@ export interface ServerDetails {
   on?: boolean;
 }
 
-export interface Server {
+export interface UnraidServer {
   vm?: Vm;
   docker?: Docker;
   serverDetails?: ServerDetails;
   pciDetails?: PciDetail[];
   status?: string;
   usbDetails?: UsbDetail[];
+  ip?: string;
 }
 
 export interface ServerMap {
-  [key: string]: Server;
+  [key: string]: UnraidServer;
 }

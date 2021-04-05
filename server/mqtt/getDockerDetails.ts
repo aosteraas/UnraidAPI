@@ -1,5 +1,5 @@
 import { getMqttConfig } from 'lib/config';
-import { Server } from 'models/server';
+import { UnraidServer } from 'models/server';
 import { MqttClient } from 'mqtt';
 import { sanitise } from './sanitise';
 
@@ -11,7 +11,7 @@ export function getDockerDetails(
   disabledDevices: string,
   dockerId: string,
   ip: string,
-  server: Server,
+  server: UnraidServer,
 ): void {
   if (disabledDevices.includes(`${ip}|${dockerId}`)) {
     return;

@@ -1,5 +1,5 @@
 import { getMqttConfig } from 'lib/config';
-import { Server } from 'models/server';
+import { UnraidServer } from 'models/server';
 import { VmDetails } from 'models/vm';
 import { MqttClient } from 'mqtt';
 import { sanitise } from './sanitise';
@@ -13,7 +13,7 @@ export function getVMDetails(
   vmId: string,
   serverTitleSanitised: string,
   ip: string,
-  server: Server,
+  server: UnraidServer,
 ): void {
   if (disabledDevices.includes(`${ip}|${vmId}`)) {
     return;
