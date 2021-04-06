@@ -8,6 +8,12 @@ interface ArrayManager {
   colorScheme: string;
 }
 
+/**
+ * Encapsulate array management, tracks busy status, provides color scheme and
+ * button copy to use in UI.
+ * @param ip server's IP address
+ * @param arrayStatus current array status as string
+ */
 export function useArrayManager(
   ip?: string,
   arrayStatus?: string,
@@ -21,6 +27,7 @@ export function useArrayManager(
     try {
       setBusy(true);
       await sendRequest('stop');
+      setBusy(false);
     } catch (err) {
       setBusy(false);
     }
@@ -33,6 +40,7 @@ export function useArrayManager(
     try {
       setBusy(true);
       await sendRequest('start');
+      setBusy(false);
     } catch (err) {
       setBusy(false);
     }

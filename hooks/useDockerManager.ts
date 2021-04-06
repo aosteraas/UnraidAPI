@@ -16,6 +16,17 @@ interface DockerManager {
   busy: string[];
 }
 
+/**
+ * Encapsulate docker container management. Maintains array of containerIds to
+ * determine which are busy. Exposes start/stop/pause/restart functions and busy
+ * boolean.
+ *
+ * @todo make this take in the container data and format it as it looks like we
+ * will need to make some changes to the data stored in state between periodic
+ * polling of the server
+ *
+ * @param ip the server's IP
+ */
 export function useDockerManager(ip?: string): DockerManager {
   const [busy, setBusy] = useState<string[]>([]);
 
@@ -23,8 +34,9 @@ export function useDockerManager(ip?: string): DockerManager {
     if (!ip) return;
     try {
       setBusy([...busy, id]);
+      // todo something with response.
       const resp = await sendRequest(id, 'domain-start');
-      //
+      setBusy(busy.filter((b) => b !== id));
     } catch (err) {
       //
       setBusy(busy.filter((b) => b !== id));
@@ -35,8 +47,9 @@ export function useDockerManager(ip?: string): DockerManager {
     if (!ip) return;
     try {
       setBusy([...busy, id]);
+      // todo something with response.
       const resp = await sendRequest(id, 'domain-pause');
-      //
+      setBusy(busy.filter((b) => b !== id));
     } catch (err) {
       //
       setBusy(busy.filter((b) => b !== id));
@@ -47,8 +60,9 @@ export function useDockerManager(ip?: string): DockerManager {
     if (!ip) return;
     try {
       setBusy([...busy, id]);
+      // todo something with response.
       const resp = await sendRequest(id, 'domain-restart');
-      //
+      setBusy(busy.filter((b) => b !== id));
     } catch (err) {
       //
       setBusy(busy.filter((b) => b !== id));
@@ -59,8 +73,9 @@ export function useDockerManager(ip?: string): DockerManager {
     if (!ip) return;
     try {
       setBusy([...busy, id]);
+      // todo something with response.
       const resp = await sendRequest(id, 'domain-stop');
-      //
+      setBusy(busy.filter((b) => b !== id));
     } catch (err) {
       //
       setBusy(busy.filter((b) => b !== id));
