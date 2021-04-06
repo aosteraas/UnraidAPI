@@ -10,6 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ServerDetails } from './ServerDetails';
+import { Dockers } from './Dockers';
 
 interface Props {
   server: UnraidServer;
@@ -34,6 +35,18 @@ export function ServerCard({ server }: Props): JSX.Element {
           </AccordionButton>
           <AccordionPanel px="unset">
             <ServerDetails ip={server.ip} details={server.serverDetails} />
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton px="unset">
+            <Text>Docker</Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel px="unset">
+            <Dockers
+              ip={server.ip}
+              containers={server.docker?.details?.containers}
+            />
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
