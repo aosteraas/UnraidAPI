@@ -12,6 +12,7 @@ export async function updateFile(
       oldServers[ip] = {};
     }
     oldServers[ip][tag] = servers[ip][tag];
+    oldServers[ip].ip = ip;
     await writeServersJson(oldServers);
   } catch (e) {
     console.log(e);

@@ -14,18 +14,14 @@ async function changeDockerStatus(
   { body }: ApiBodyRequest<DockerBody | undefined>,
   res: NextApiResponse,
 ): Promise<void> {
-  if (body) {
-    const { id, server, auth, action } = body;
-    const token = await getCSRFToken(server, auth);
-    const message = await changeDockerState(id, action, server, auth, token);
-
-    const response = {
-      message,
-      status: 200,
-    };
-
-    res.send(response);
+  if (!body) {
+    res.status(401).send({});
   }
+  const { id, server, auth, action } = body;
+  const token = await getCSRFToken(server, auth);
+  const message = await changeDockerState(id, action, server, auth, token);
+
+  res.status(200).send({ message });
 }
 
 export default changeDockerStatus;

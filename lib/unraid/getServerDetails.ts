@@ -23,10 +23,11 @@ export function getServerDetails(
       ...servers[ip].serverDetails,
       ...details,
     };
+
     servers[ip].ip = ip;
 
     servers[ip].serverDetails.on = servers[ip].status === 'online';
 
-    updateFile(servers, ip, 'serverDetails');
+    await updateFile(servers, ip, 'serverDetails');
   });
 }
