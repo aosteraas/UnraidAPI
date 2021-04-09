@@ -4,7 +4,7 @@ import React from 'react';
 import {
   IoPauseCircleOutline,
   IoStopCircleOutline,
-  IoPlayCircleOutline,
+  // IoPlayCircleOutline,
   IoReloadOutline,
   IoHelpOutline,
 } from 'react-icons/io5';

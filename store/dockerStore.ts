@@ -9,6 +9,7 @@ type DockerStore = {
   containers: Container[];
   setContainers: (containers: Container[]) => void;
   setBusy: (id: string, isBusy: boolean) => void;
+  setStatus: (id: string, status: string) => void;
 };
 
 export const useDockerStore = create<DockerStore>((set) => ({
@@ -19,6 +20,16 @@ export const useDockerStore = create<DockerStore>((set) => ({
       const c = containers.map((c) => {
         if (c.containerId === id) {
           return { ...c, isBusy };
+        }
+        return c;
+      });
+      return { containers: c };
+    }),
+  setStatus: (id, status) =>
+    set(({ containers }) => {
+      const c = containers.map((c) => {
+        if (c.containerId === id) {
+          return { ...c, status };
         }
         return c;
       });

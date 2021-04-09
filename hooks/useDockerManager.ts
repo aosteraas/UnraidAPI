@@ -1,5 +1,5 @@
 import { DockerContainer } from 'models/docker';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ApiRoute } from 'routes';
 import { useDockerStore, Container } from 'store/dockerStore';
 
@@ -33,10 +33,11 @@ export function useDockerManager(
   ip?: string,
   containers?: Record<string, DockerContainer>,
 ): DockerManager {
-  const [data, setContainers, setBusy] = useDockerStore((s) => [
+  const [data, setContainers, setBusy, setStatus] = useDockerStore((s) => [
     s.containers,
     s.setContainers,
     s.setBusy,
+    s.setStatus,
   ]);
 
   useEffect(() => {
@@ -44,15 +45,32 @@ export function useDockerManager(
     setContainers(parsed);
   }, [containers, setContainers]);
 
+  const handleResponse = (res: Response, action: DockerAction, id: string) => {
+    setBusy(id, false);
+    if (res.status !== 200) {
+      setStatus(id, 'stopped');
+      return;
+    }
+    switch (action) {
+      case 'domain-pause':
+        setStatus(id, 'paused');
+        break;
+      case 'domain-stop':
+        setStatus(id, 'stopped');
+        break;
+      default:
+        setStatus(id, 'started');
+        break;
+    }
+  };
+
   const start = async (id: string) => {
     if (!ip) return;
     try {
       setBusy(id, true);
-      // todo something with response.
       const resp = await sendRequest(id, 'domain-start');
-      setBusy(id, false);
+      handleResponse(resp, 'domain-start', id);
     } catch (err) {
-      //
       setBusy(id, false);
     }
   };
@@ -61,11 +79,9 @@ export function useDockerManager(
     if (!ip) return;
     try {
       setBusy(id, true);
-      // todo something with response.
       const resp = await sendRequest(id, 'domain-pause');
-      setBusy(id, false);
+      handleResponse(resp, 'domain-pause', id);
     } catch (err) {
-      //
       setBusy(id, false);
     }
   };
@@ -74,11 +90,9 @@ export function useDockerManager(
     if (!ip) return;
     try {
       setBusy(id, true);
-      // todo something with response.
       const resp = await sendRequest(id, 'domain-restart');
-      setBusy(id, false);
+      handleResponse(resp, 'domain-restart', id);
     } catch (err) {
-      //
       setBusy(id, false);
     }
   };
@@ -87,11 +101,9 @@ export function useDockerManager(
     if (!ip) return;
     try {
       setBusy(id, true);
-      // todo something with response.
       const resp = await sendRequest(id, 'domain-stop');
-      setBusy(id, false);
+      handleResponse(resp, 'domain-stop', id);
     } catch (err) {
-      //
       setBusy(id, false);
     }
   };
@@ -103,12 +115,7 @@ export function useDockerManager(
       body: JSON.stringify({ ip, id, action }),
     });
 
-    if (res.status !== 200) {
-      throw new Error('Failed to modify container state');
-    }
-
-    const data = await res.json();
-    return data;
+    return res;
   };
 
   return { start, pause, stop, restart, data };
