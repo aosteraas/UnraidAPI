@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { DockerContainer } from 'models/docker';
+import { useState, useEffect } from 'react';
 import { ApiRoute } from 'routes';
+import { useDockerStore, Container } from 'store/dockerStore';
 
 type DockerAction =
   | 'domain-resume'
@@ -13,7 +15,7 @@ interface DockerManager {
   pause: (id: string) => Promise<void>;
   stop: (id: string) => Promise<void>;
   restart: (id: string) => Promise<void>;
-  busy: string[];
+  data: Container[];
 }
 
 /**
@@ -27,58 +29,70 @@ interface DockerManager {
  *
  * @param ip the server's IP
  */
-export function useDockerManager(ip?: string): DockerManager {
-  const [busy, setBusy] = useState<string[]>([]);
+export function useDockerManager(
+  ip?: string,
+  containers?: Record<string, DockerContainer>,
+): DockerManager {
+  const [data, setContainers, setBusy] = useDockerStore((s) => [
+    s.containers,
+    s.setContainers,
+    s.setBusy,
+  ]);
+
+  useEffect(() => {
+    const parsed = parseContainers(containers ?? {});
+    setContainers(parsed);
+  }, [containers, setContainers]);
 
   const start = async (id: string) => {
     if (!ip) return;
     try {
-      setBusy([...busy, id]);
+      setBusy(id, true);
       // todo something with response.
       const resp = await sendRequest(id, 'domain-start');
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     } catch (err) {
       //
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     }
   };
 
   const pause = async (id: string) => {
     if (!ip) return;
     try {
-      setBusy([...busy, id]);
+      setBusy(id, true);
       // todo something with response.
       const resp = await sendRequest(id, 'domain-pause');
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     } catch (err) {
       //
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     }
   };
 
   const restart = async (id: string) => {
     if (!ip) return;
     try {
-      setBusy([...busy, id]);
+      setBusy(id, true);
       // todo something with response.
       const resp = await sendRequest(id, 'domain-restart');
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     } catch (err) {
       //
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     }
   };
 
   const stop = async (id: string) => {
     if (!ip) return;
     try {
-      setBusy([...busy, id]);
+      setBusy(id, true);
       // todo something with response.
       const resp = await sendRequest(id, 'domain-stop');
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     } catch (err) {
       //
-      setBusy(busy.filter((b) => b !== id));
+      setBusy(id, false);
     }
   };
 
@@ -97,5 +111,12 @@ export function useDockerManager(ip?: string): DockerManager {
     return data;
   };
 
-  return { start, pause, stop, restart, busy };
+  return { start, pause, stop, restart, data };
+}
+
+function parseContainers(containers: Record<string, DockerContainer>) {
+  return Object.entries(containers).map(([, data]) => ({
+    ...data,
+    isBusy: false,
+  }));
 }

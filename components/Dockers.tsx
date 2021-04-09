@@ -8,29 +8,24 @@ interface Props {
   containers?: Record<string, Container>;
 }
 
-function parseContainers(containers: Record<string, Container>) {
-  return Object.entries(containers).map(([key, value]) => ({ key, value }));
-}
-
 export function Dockers({ containers, ip }: Props): JSX.Element | null {
-  const { start, pause, stop, restart, busy } = useDockerManager(ip);
+  const { start, pause, stop, restart, data } = useDockerManager(
+    ip,
+    containers,
+  );
 
   if (!containers) {
     return null;
   }
 
-  const data = parseContainers(containers);
-
   return (
     <Flex flexDir="column">
-      {data.map(({ key, value }) => {
-        const isBusy = busy.includes(key);
+      {data.map((cont) => {
         return (
           <DockerContainer
-            key={key}
-            id={key}
-            container={value}
-            isBusy={isBusy}
+            key={cont.containerId}
+            id={cont.containerId}
+            container={cont}
             ip={ip}
             start={start}
             pause={pause}

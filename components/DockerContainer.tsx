@@ -1,4 +1,3 @@
-import { DockerContainer as Container } from 'models/docker';
 import { Image, Button, ButtonGroup, IconButton } from '@chakra-ui/react';
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
@@ -9,11 +8,11 @@ import {
   IoReloadOutline,
   IoHelpOutline,
 } from 'react-icons/io5';
+import { Container } from 'store/dockerStore';
 
 export interface DockerContainerProps {
   id: string;
   container: Container;
-  isBusy: boolean;
   ip?: string;
   start: (id: string) => Promise<void>;
   pause: (id: string) => Promise<void>;
@@ -24,7 +23,6 @@ export interface DockerContainerProps {
 export function DockerContainer({
   id,
   container,
-  isBusy,
   ip,
   pause,
   restart,
@@ -45,7 +43,7 @@ export function DockerContainer({
             {container.name}
           </Button>
           <IconButton
-            isDisabled={isBusy}
+            isDisabled={container.isBusy}
             fontSize="1.25rem"
             aria-label="Pause container"
             colorScheme="teal"
@@ -55,7 +53,7 @@ export function DockerContainer({
             Pause
           </IconButton>
           <IconButton
-            isDisabled={isBusy}
+            isDisabled={container.isBusy}
             fontSize="1.25rem"
             aria-label="Restart container"
             colorScheme="yellow"
@@ -65,7 +63,7 @@ export function DockerContainer({
             Restart
           </IconButton>
           <IconButton
-            isDisabled={isBusy}
+            isDisabled={container.isBusy}
             fontSize="1.25rem"
             aria-label="Stop container"
             colorScheme="red"
