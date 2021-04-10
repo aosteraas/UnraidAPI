@@ -10,7 +10,10 @@ interface Props {
 }
 
 export function VirtualMachines({ vms, ip }: Props): JSX.Element | null {
-  const { data } = useVmManager(ip, vms);
+  const { data, start, stop, restart, forceStop, pause } = useVmManager(
+    ip,
+    vms,
+  );
 
   if (!vms) {
     return null;
@@ -19,7 +22,18 @@ export function VirtualMachines({ vms, ip }: Props): JSX.Element | null {
   return (
     <Flex flexDir="column">
       {data.map((vm, idx) => {
-        return <VirtualMachine key={vm.id ?? idx} vm={vm} ip={ip} />;
+        return (
+          <VirtualMachine
+            key={vm.id ?? idx}
+            start={start}
+            restart={restart}
+            pause={pause}
+            stop={stop}
+            forceStop={forceStop}
+            vm={vm}
+            ip={ip}
+          />
+        );
       })}
     </Flex>
   );

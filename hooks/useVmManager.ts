@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { ApiRoute } from 'routes';
 import { useVmStore, Vm } from 'store/vmStore';
 
-type VmChange = (id: string) => Promise<void>;
+export type VmChange = (id: string) => Promise<void>;
 
 interface VmManager {
   data: Vm[];
