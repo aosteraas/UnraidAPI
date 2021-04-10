@@ -14,13 +14,15 @@ async function changeVMStatus(
   { body }: ApiBodyRequest<VmStatusBody>,
   res: NextApiResponse,
 ): Promise<void> {
-  if (body) {
-    const { id, action, server, auth } = body;
-    const token = await getCSRFToken(server, auth);
-    const message = await changeVMState(id, action, server, auth, token);
-    const response = { status: 200, message };
-    res.send(response);
+  if (!body) {
+    res.status(401).send({});
+    return;
   }
+
+  const { id, action, server, auth } = body;
+  const token = await getCSRFToken(server, auth);
+  const message = await changeVMState(id, action, server, auth, token);
+  res.status(200).send({ message });
 }
 
 export default changeVMStatus;

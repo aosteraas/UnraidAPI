@@ -16,6 +16,7 @@ async function changeDockerStatus(
 ): Promise<void> {
   if (!body) {
     res.status(401).send({});
+    return;
   }
   const { id, server, auth, action } = body;
   const token = await getCSRFToken(server, auth);
