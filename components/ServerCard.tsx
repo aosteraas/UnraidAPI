@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { ServerDetails } from './ServerDetails';
 import { Dockers } from './Dockers';
+import { VirtualMachines } from './VirtualMachines';
 
 interface Props {
   server: UnraidServer;
@@ -39,6 +40,15 @@ export function ServerCard({ server }: Props): JSX.Element {
         </AccordionItem>
         <AccordionItem>
           <AccordionButton px="unset">
+            <Text>VMs</Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel px="unset">
+            <VirtualMachines ip={server.ip} vms={server.vm?.details} />
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton px="unset">
             <Text>Docker</Text>
             <AccordionIcon />
           </AccordionButton>
@@ -53,15 +63,3 @@ export function ServerCard({ server }: Props): JSX.Element {
     </Flex>
   );
 }
-
-// const startVM = (vm) => {};
-// const pauseVM = (vm) => {};
-// const restartVM = (vm) => {};
-// const stopVM = (vm) => {};
-// const forceStopVM = (vm) => {};
-// const downloadXML = (vm) => {};
-// const startDocker = (docker) => {};
-// const pauseDocker = (docker) => {};
-// const restartDocker = (docker) => {};
-// const stopDocker = (docker) => {};
-// const download = (filename, text) => {};
