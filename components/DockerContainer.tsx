@@ -32,7 +32,13 @@ export function DockerContainer({
 }: DockerContainerProps): JSX.Element {
   const isPaused = container.status === 'paused';
   const resumePause = isPaused ? resume : pause;
-  const ActionIcon = isPaused ? IoPlayCircleOutline : IoPauseCircleOutline;
+  const ResumePauseIcon = isPaused ? IoPlayCircleOutline : IoPauseCircleOutline;
+  const resumePauseText = isPaused ? 'Resume' : 'Pause';
+
+  const isStopped = container.status === 'stopped';
+  const stopStart = isStopped ? start : stop;
+  const StopStartIcon = isStopped ? IoPlayCircleOutline : IoStopCircleOutline;
+  const stopStartText = isStopped ? 'Start' : 'Stop';
   return (
     <Flex flexDir="column">
       <Flex>
@@ -50,12 +56,13 @@ export function DockerContainer({
           <IconButton
             isDisabled={container.isBusy}
             fontSize="1.25rem"
-            aria-label="Pause container"
+            aria-label={`${resumePauseText} container`}
             colorScheme="teal"
-            icon={<ActionIcon />}
+            icon={<ResumePauseIcon />}
             onClick={() => resumePause(id)}
+            disabled={isStopped}
           >
-            Pause
+            {resumePauseText}
           </IconButton>
           <IconButton
             isDisabled={container.isBusy}
@@ -64,18 +71,19 @@ export function DockerContainer({
             colorScheme="yellow"
             icon={<IoReloadOutline />}
             onClick={() => restart(id)}
+            disabled={isStopped}
           >
             Restart
           </IconButton>
           <IconButton
             isDisabled={container.isBusy}
             fontSize="1.25rem"
-            aria-label="Stop container"
+            aria-label={`${stopStartText} container`}
             colorScheme="red"
-            icon={<IoStopCircleOutline />}
-            stop={() => stop(id)}
+            icon={<StopStartIcon />}
+            onClick={() => stopStart(id)}
           >
-            Stop
+            {stopStartText}
           </IconButton>
         </ButtonGroup>
       </Flex>
