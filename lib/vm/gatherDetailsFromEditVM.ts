@@ -24,6 +24,7 @@ export async function gatherDetailsFromEditVM(
         Authorization: `Basic ${auth}`,
         Cookie: authCookies.get(ip) ?? '',
       },
+      transformResponse: (res) => res,
     });
     callSucceeded(ip);
     return extractVMDetails(vmObject, response, ip);

@@ -1,5 +1,4 @@
-import { Image, Button, ButtonGroup, IconButton } from '@chakra-ui/react';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Image, Button, ButtonGroup, IconButton } from '@chakra-ui/react';
 import React from 'react';
 import {
   IoPauseCircleOutline,
@@ -39,7 +38,7 @@ export function DockerContainer({
               fallback={<IoHelpOutline />}
             />
           </Button>
-          <Button mr="-px" width="60%" justifyContent="flex-start">
+          <Button mr="-px" width="60%" justifyContent="flex-start" flex={1}>
             {container.name}
           </Button>
           <IconButton
