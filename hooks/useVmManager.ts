@@ -12,6 +12,7 @@ interface VmManager {
   pause: VmChange;
   stop: VmChange;
   forceStop: VmChange;
+  resume: VmChange;
 }
 
 type VmAction =
@@ -103,6 +104,16 @@ export function useVmManager(ip?: string, vms?: VmDetailsMap): VmManager {
     }
   };
 
+  const resume = async (id: string) => {
+    try {
+      setBusy(id, true);
+      const res = await sendRequest(id, 'domain-resume');
+      await handleResponse(res, id);
+    } catch {
+      setBusy(id, true);
+    }
+  };
+
   const sendRequest = async (id: string, action: VmAction) => {
     const res = await fetch(ApiRoute.UpdateVm, {
       method: 'POST',
@@ -113,7 +124,7 @@ export function useVmManager(ip?: string, vms?: VmDetailsMap): VmManager {
     return res;
   };
 
-  return { data, start, stop, pause, forceStop, restart };
+  return { data, start, stop, pause, forceStop, restart, resume };
 }
 
 function parseVms(vms: VmDetailsMap) {

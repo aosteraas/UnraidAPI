@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function VirtualMachines({ vms, ip }: Props): JSX.Element | null {
-  const { data, start, stop, restart, forceStop, pause } = useVmManager(
+  const { data, start, stop, restart, forceStop, pause, resume } = useVmManager(
     ip,
     vms,
   );
@@ -30,6 +30,7 @@ export function VirtualMachines({ vms, ip }: Props): JSX.Element | null {
             pause={pause}
             stop={stop}
             forceStop={forceStop}
+            resume={resume}
             vm={vm}
             ip={ip}
           />

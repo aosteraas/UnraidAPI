@@ -12,6 +12,7 @@ import {
   // IoPlayCircleOutline,
   IoReloadOutline,
   IoHelpOutline,
+  IoPlayCircleOutline,
 } from 'react-icons/io5';
 import { BiBomb } from 'react-icons/bi';
 import { VmChange } from 'hooks/useVmManager';
@@ -25,17 +26,28 @@ interface Props {
   pause: VmChange;
   stop: VmChange;
   forceStop: VmChange;
+  resume: VmChange;
 }
 
 export function VirtualMachine({
   ip,
   vm,
   start,
+  resume,
   stop,
   restart,
   forceStop,
   pause,
 }: Props): JSX.Element {
+  const isPaused = vm.status === 'paused' || vm.status === 'pmsuspended';
+  const resumePause = isPaused ? resume : pause;
+  const ResumePauseIcon = isPaused ? IoPlayCircleOutline : IoPauseCircleOutline;
+  const resumePauseText = isPaused ? 'Resume' : 'Pause';
+
+  const isStopped = vm.status === 'stopped';
+  const stopStart = isStopped ? start : stop;
+  const StopStartIcon = isStopped ? IoPlayCircleOutline : IoStopCircleOutline;
+  const stopStartText = isStopped ? 'Start' : 'Stop';
   return (
     <Flex flexDir="column">
       <Flex>
@@ -53,37 +65,38 @@ export function VirtualMachine({
           <IconButton
             isDisabled={vm.isBusy}
             fontSize="1.25rem"
-            aria-label="Pause container"
+            aria-label={`${resumePauseText} VM`}
             colorScheme="teal"
-            icon={<IoPauseCircleOutline />}
-            onClick={() => pause(vm.id)}
+            icon={<ResumePauseIcon />}
+            onClick={() => resumePause(vm.id)}
           >
-            Pause
+            {resumePauseText}
           </IconButton>
           <IconButton
             isDisabled={vm.isBusy}
             fontSize="1.25rem"
-            aria-label="Restart container"
+            aria-label="Restart VM"
             colorScheme="yellow"
             icon={<IoReloadOutline />}
             onClick={() => restart(vm.id)}
+            disabled={isStopped}
           >
             Restart
           </IconButton>
           <IconButton
             isDisabled={vm.isBusy}
             fontSize="1.25rem"
-            aria-label="Stop container"
+            aria-label={`${stopStartText} VM`}
             colorScheme="red"
-            icon={<IoStopCircleOutline />}
-            onClick={() => stop(vm.id)}
+            icon={<StopStartIcon />}
+            onClick={() => stopStart(vm.id)}
           >
-            Stop
+            {stopStartText}
           </IconButton>
           <IconButton
             isDisabled={vm.isBusy}
             fontSize="1.25rem"
-            aria-label="Force stop container"
+            aria-label="Force stop VM"
             colorScheme="red"
             background="red.500"
             icon={<BiBomb />}

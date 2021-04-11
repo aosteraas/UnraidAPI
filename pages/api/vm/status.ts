@@ -6,7 +6,7 @@ import { changeVMState } from 'lib/vm/changeVMState';
 interface VmStatusBody {
   id: string;
   action: string;
-  server: string;
+  ip: string;
   auth: string;
 }
 // changeVMStatus
@@ -19,9 +19,9 @@ async function changeVMStatus(
     return;
   }
 
-  const { id, action, server, auth } = body;
-  const token = await getCSRFToken(server, auth);
-  const message = await changeVMState(id, action, server, auth, token);
+  const { id, action, ip, auth } = body;
+  const token = await getCSRFToken(ip, auth);
+  const message = await changeVMState(id, action, ip, auth, token);
   res.status(200).send({ message });
 }
 
