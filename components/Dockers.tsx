@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function Dockers({ containers, ip }: Props): JSX.Element | null {
-  const { start, pause, stop, restart, data } = useDockerManager(
+  const { start, pause, stop, restart, resume, data } = useDockerManager(
     ip,
     containers,
   );
@@ -31,6 +31,7 @@ export function Dockers({ containers, ip }: Props): JSX.Element | null {
             pause={pause}
             stop={stop}
             restart={restart}
+            resume={resume}
           />
         );
       })}

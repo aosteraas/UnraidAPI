@@ -10,11 +10,14 @@ type DockerAction =
   | 'domain-pause'
   | 'domain-stop';
 
+export type ContainerChange = (id: string) => Promise<void>;
+
 interface DockerManager {
-  start: (id: string) => Promise<void>;
-  pause: (id: string) => Promise<void>;
-  stop: (id: string) => Promise<void>;
-  restart: (id: string) => Promise<void>;
+  start: ContainerChange;
+  pause: ContainerChange;
+  stop: ContainerChange;
+  restart: ContainerChange;
+  resume: ContainerChange;
   data: Container[];
 }
 
@@ -108,6 +111,17 @@ export function useDockerManager(
     }
   };
 
+  const resume = async (id: string) => {
+    if (!ip) return;
+    try {
+      setBusy(id, true);
+      const resp = await sendRequest(id, 'domain-resume');
+      handleResponse(resp, 'domain-resume', id);
+    } catch (err) {
+      setBusy(id, false);
+    }
+  };
+
   const sendRequest = async (id: string, action: DockerAction) => {
     const res = await fetch(ApiRoute.UpdateDocker, {
       method: 'POST',
@@ -118,7 +132,7 @@ export function useDockerManager(
     return res;
   };
 
-  return { start, pause, stop, restart, data };
+  return { start, pause, stop, restart, resume, data };
 }
 
 function parseContainers(containers: Record<string, DockerContainer>) {

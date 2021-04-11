@@ -6,7 +6,7 @@ import { ApiBodyRequest } from 'models/api';
 interface DockerBody {
   id: string;
   action: string;
-  server: string;
+  ip: string;
   auth: string;
 }
 // changeDockerStatus
@@ -18,9 +18,9 @@ async function changeDockerStatus(
     res.status(401).send({});
     return;
   }
-  const { id, server, auth, action } = body;
-  const token = await getCSRFToken(server, auth);
-  const message = await changeDockerState(id, action, server, auth, token);
+  const { id, ip, auth, action } = body;
+  const token = await getCSRFToken(ip, auth);
+  const message = await changeDockerState(id, action, ip, auth, token);
 
   res.status(200).send({ message });
 }

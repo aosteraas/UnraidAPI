@@ -3,7 +3,7 @@ import React from 'react';
 import {
   IoPauseCircleOutline,
   IoStopCircleOutline,
-  // IoPlayCircleOutline,
+  IoPlayCircleOutline,
   IoReloadOutline,
   IoHelpOutline,
 } from 'react-icons/io5';
@@ -17,6 +17,7 @@ export interface DockerContainerProps {
   pause: (id: string) => Promise<void>;
   stop: (id: string) => Promise<void>;
   restart: (id: string) => Promise<void>;
+  resume: (id: string) => Promise<void>;
 }
 
 export function DockerContainer({
@@ -25,8 +26,13 @@ export function DockerContainer({
   ip,
   pause,
   restart,
+  start,
   stop,
+  resume,
 }: DockerContainerProps): JSX.Element {
+  const isPaused = container.status === 'paused';
+  const resumePause = isPaused ? resume : pause;
+  const ActionIcon = isPaused ? IoPlayCircleOutline : IoPauseCircleOutline;
   return (
     <Flex flexDir="column">
       <Flex>
@@ -46,8 +52,8 @@ export function DockerContainer({
             fontSize="1.25rem"
             aria-label="Pause container"
             colorScheme="teal"
-            icon={<IoPauseCircleOutline />}
-            onClick={() => pause(id)}
+            icon={<ActionIcon />}
+            onClick={() => resumePause(id)}
           >
             Pause
           </IconButton>
