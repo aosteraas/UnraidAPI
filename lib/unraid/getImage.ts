@@ -16,8 +16,7 @@ export async function getImage(
 
   Object.keys(servers).forEach((server) => {
     const urlBase = server.includes('http') ? server : `http://${server}`;
-    const basePath = path.includes('plugins') ? '/state' : '/plugins';
-    fetch(urlBase + basePath + path, {
+    fetch(urlBase + path, {
       method: 'GET',
       headers: {
         Authorization: `Basic ${serverAuth[server]}`,

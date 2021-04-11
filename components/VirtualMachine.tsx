@@ -55,7 +55,7 @@ export function VirtualMachine({
           <Button background="gray.800" py="5px">
             <Image
               boxSize="1.875rem"
-              src={`//${ip}${vm.icon}`}
+              src={`${vm.icon}`}
               fallback={<IoHelpOutline />}
             />
           </Button>

@@ -46,7 +46,7 @@ export function DockerContainer({
           <Button background="gray.800" py="5px">
             <Image
               boxSize="1.875rem"
-              src={`//${ip}${container.imageUrl}`}
+              src={`${container.imageUrl}`}
               fallback={<IoHelpOutline />}
             />
           </Button>
