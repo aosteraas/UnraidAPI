@@ -1,4 +1,11 @@
-import { Flex, Image, Button, ButtonGroup, IconButton } from '@chakra-ui/react';
+import {
+  Flex,
+  Image,
+  Button,
+  ButtonGroup,
+  IconButton,
+  Badge,
+} from '@chakra-ui/react';
 import {
   IoPauseCircleOutline,
   IoStopCircleOutline,
@@ -6,6 +13,7 @@ import {
   IoReloadOutline,
   IoHelpOutline,
 } from 'react-icons/io5';
+import { BiBomb } from 'react-icons/bi';
 import { VmChange } from 'hooks/useVmManager';
 import { Vm } from 'store/vmStore';
 
@@ -72,8 +80,39 @@ export function VirtualMachine({
           >
             Stop
           </IconButton>
+          <IconButton
+            isDisabled={vm.isBusy}
+            fontSize="1.25rem"
+            aria-label="Force stop container"
+            colorScheme="red"
+            background="red.500"
+            icon={<BiBomb />}
+            onClick={() => forceStop(vm.id)}
+          >
+            Force Stop
+          </IconButton>
         </ButtonGroup>
       </Flex>
+      <Flex justifyContent="space-between">
+        <BadgePair label="Cores" value={vm.coreCount} />
+        <BadgePair label="RAM" value={vm.ramAllocation} />
+        <BadgePair label="HDD" value={vm.hddAllocation.total} />
+        <BadgePair label="GPU" value={vm.primaryGPU} />
+        <BadgePair label="Status" value={vm.status} />
+      </Flex>
+    </Flex>
+  );
+}
+
+interface BadgePairProps {
+  label: string;
+  value?: string | number;
+}
+function BadgePair({ label, value }: BadgePairProps) {
+  return (
+    <Flex>
+      <Badge colorScheme="black">{label}</Badge>
+      <Badge colorScheme="teal">{value}</Badge>
     </Flex>
   );
 }
