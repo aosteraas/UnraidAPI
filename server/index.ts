@@ -11,7 +11,11 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   startMQTTClient();
   createServer((req, res) => {
-    const parsedUrl = parse(req.url, true);
+    let parsedUrl = parse(req.url, true);
+    if (parsedUrl.pathname.substring(0, 7) === "/state/" || parsedUrl.pathname.substring(0, 9) === "/plugins/") {
+      parsedUrl = parse("/api/image?url=" + req.url, true);
+    }
+
     handle(req, res, parsedUrl);
   }).listen(port, () => {
     console.log('> Ready on http://localhost:3000');
