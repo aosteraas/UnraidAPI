@@ -10,11 +10,11 @@ async function proxyImage(
   let servers: ServerMap;
   try {
     servers = await parseServers();
-    getImage(servers, res, <string>req.query.url);
+    await getImage(servers, res, <string>req.query.url);
   } catch (e) {
     console.log('Failed to retrieve config file, creating new.');
   }
-  getImage(servers, res, <string>req.query.url);
+  await getImage(servers, res, <string>req.query.url);
 }
 
 export default proxyImage;

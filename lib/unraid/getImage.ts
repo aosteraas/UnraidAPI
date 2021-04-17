@@ -12,35 +12,31 @@ export async function getImage(
 ): Promise<void> {
   const serverAuth = await readMqttKeys();
   await logIn(servers, serverAuth);
-  let sent = false;
 
-  Object.keys(servers).forEach((server) => {
-    const urlBase = server.includes('http') ? server : `http://${server}`;
-    fetch(urlBase + path, {
-      method: 'GET',
-      headers: {
-        Authorization: `Basic ${serverAuth[server]}`,
-        Cookie: authCookies.get(server) ?? '',
-        'Content-Type': 'image/png',
-      },
-    })
-      .then((image) => image.buffer())
-      .then((buffer) => {
-        if (buffer.toString().includes('<!DOCTYPE html>')) {
-          return;
-        }
-        if (!sent) {
-          sent = true;
-          try {
-            res.setHeader('content-type', 'image/png');
-            res.send(buffer);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
+  const ips = Object.keys(servers);
+  try {
+    for (const ip of ips) {
+      const urlBase = ip.includes('http') ? ip : `http://${ip}`;
+
+      const response = await fetch(urlBase + path, {
+        method: 'GET',
+        headers: {
+          Authorization: `Basic ${serverAuth[ip]}`,
+          Cookie: authCookies.get(ip) ?? '',
+          'Content-Type': 'image/png',
+        },
       });
-  });
+
+      const buff = await response.buffer();
+
+      if (buff.toString().includes('<!DOCTYPE html>')) {
+        continue;
+      }
+      res.setHeader('content-type', 'image/png');
+      res.send(buff);
+      break;
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
