@@ -14,7 +14,8 @@ async function proxyImage(
   } catch (e) {
     console.log('Failed to retrieve config file, creating new.');
   }
-  await getImage(servers, res, <string>req.query.url);
+  res.end();
+  // await getImage(servers, res, <string>req.query.url);
 }
 
 export default proxyImage;
