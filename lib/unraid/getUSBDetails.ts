@@ -1,15 +1,15 @@
-import { ServerMap } from 'models/server';
+import { ServerMap, UnraidServer } from 'models/server';
 import { callSucceeded, callFailed } from 'lib/api';
 import { authCookies } from 'lib/auth';
 import { extractValue } from 'lib/scraper';
 import { updateFile } from 'lib/storage';
 import { unraidApi } from './unraidApi';
 
-export function getUSBDetails(
+export async function getUSBDetails(
   servers: ServerMap,
   serverAuth: Record<string, string>,
-): void {
-  Object.keys(servers).forEach((ip) => {
+): Promise<UnraidServer[]> {
+  const all = Object.keys(servers).map(async (ip) => {
     if (!serverAuth[ip]) {
       return;
     }
@@ -20,7 +20,7 @@ export function getUSBDetails(
     ) {
       const urlBase = ip.includes('http') ? ip : `http://${ip}`;
       const basePath = '/VMs/UpdateVM?uuid=';
-      unraidApi({
+      const res = await unraidApi({
         method: 'get',
         url:
           urlBase +
@@ -30,38 +30,32 @@ export function getUSBDetails(
           Authorization: `Basic ${serverAuth[ip]}`,
           Cookie: authCookies.get(ip) ?? '',
         },
-      })
-        .then((response) => {
-          callSucceeded(ip);
-          updateFile(servers, ip, 'status');
+      });
+      callSucceeded(ip);
+      updateFile(servers, ip, 'status');
 
-          servers[ip].usbDetails = [];
-          while (response.data.toString().includes('<label for="usb')) {
-            const row = extractValue(
-              response.data,
-              '<label for="usb',
-              '</label>',
-            );
-            servers[ip].usbDetails.push({
-              id: extractValue(row, 'value="', '"'),
-              name: extractValue(row, '/> ', ' ('),
-            });
-            response.data = response.data.replace('<label for="usb', '');
-          }
-          updateFile(servers, ip, 'usbDetails');
-        })
-        .catch((e) => {
-          console.log(`Get USB Details for ip: ${ip} Failed`);
-          if (e.response && e.response.status) {
-            callFailed(ip, e.response.status);
-          } else {
-            callFailed(ip, 404);
-          }
-          console.log(e.message);
-          if (e.message.includes('ETIMEDOUT')) {
-            updateFile(servers, ip, 'status');
-          }
+      servers[ip].usbDetails = [];
+      while (res.data.toString().includes('<label for="usb')) {
+        const row = extractValue(res.data, '<label for="usb', '</label>');
+        servers[ip].usbDetails.push({
+          id: extractValue(row, 'value="', '"'),
+          name: extractValue(row, '/> ', ' ('),
         });
+        res.data = res.data.replace('<label for="usb', '');
+      }
+      return servers[ip];
+      // updateFile(servers, ip, 'usbDetails');
+      // console.log(`Get USB Details for ip: ${ip} Failed`);
+      // if (e.response && e.res.status) {
+      //   callFailed(ip, e.res.status);
+      // } else {
+      //   callFailed(ip, 404);
+      // }
+      // console.log(e.message);
+      // if (e.message.includes('ETIMEDOUT')) {
+      //   updateFile(servers, ip, 'status');
+      // }
     }
   });
+  return await Promise.all(all);
 }

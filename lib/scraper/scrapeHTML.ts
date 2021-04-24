@@ -17,14 +17,14 @@ interface ServerCoreDetails {
 
 export async function scrapeHTML(
   ip: string,
-  serverAuth: Record<string, string>,
+  serverAuth: string,
 ): Promise<ServerCoreDetails | undefined> {
   try {
     const response = await unraidApi({
       method: 'get',
       url: `${ip.includes('http') ? ip : `http://${ip}`}/Dashboard`,
       headers: {
-        Authorization: `Basic ${serverAuth[ip]}`,
+        Authorization: `Basic ${serverAuth}`,
         Cookie: authCookies.get(ip) ?? '',
       },
     });

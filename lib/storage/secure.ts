@@ -46,7 +46,6 @@ async function checkCreateMqttKeys() {
 
   try {
     const exists = await fs.promises.stat(location);
-
     if (!exists) {
       await fs.promises.writeFile(location, JSON.stringify({}));
     }
@@ -64,13 +63,15 @@ export async function readMqttKeys(): Promise<MqttKeyMap> {
   const keyStorage = getKeyStorage();
 
   const location = path.join(keyStorage, MQTT_KEYS);
+  await checkCreateMqttKeys();
 
   try {
     const data = await fs.promises.readFile(location);
     const mqttKeys = JSON.parse(data.toString());
     return mqttKeys as MqttKeyMap;
-  } catch {
-    console.error(`Unable to read and/orparse ${keyStorage}/${MQTT_KEYS}`);
+  } catch (err) {
+    console.log(err);
+    console.error(`Unable to read and/or parse ${keyStorage}/${MQTT_KEYS}`);
     return {};
   }
 }

@@ -1,8 +1,11 @@
-import { ServerMap } from 'models/server';
+import { ServerMap, UnraidServer } from 'models/server';
 import { updateFile } from 'lib/storage';
 
-export function getPCIDetails(servers: ServerMap, skipSave = false): void {
-  Object.keys(servers).forEach((ip) => {
+export async function getPCIDetails(
+  servers: ServerMap,
+  skipSave = false,
+): Promise<UnraidServer[]> {
+  const all = Object.keys(servers).map(async (ip) => {
     if (
       servers[ip].vm &&
       servers[ip].vm.details &&
@@ -17,5 +20,7 @@ export function getPCIDetails(servers: ServerMap, skipSave = false): void {
     if (!skipSave) {
       updateFile(servers, ip, 'pciDetails');
     }
+    return servers[ip];
   });
+  return await Promise.all(all);
 }
