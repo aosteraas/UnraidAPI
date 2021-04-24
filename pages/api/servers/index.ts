@@ -34,6 +34,7 @@ async function getServers(
   const auth = loadAuth ? await readMqttKeys() : JSON.parse(authHeader);
 
   const _servers = await getUnraidDetails(response.servers, auth);
+
   response.status = 200;
   res.status(200).send({ servers: _servers });
 }

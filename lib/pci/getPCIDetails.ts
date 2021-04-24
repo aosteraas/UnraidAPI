@@ -18,7 +18,7 @@ export async function getPCIDetails(
         ].edit.pcis;
     }
     if (!skipSave) {
-      updateFile(servers, ip, 'pciDetails');
+      // updateFile(servers, ip, 'pciDetails');
     }
     return servers[ip];
   });

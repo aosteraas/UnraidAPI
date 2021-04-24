@@ -30,7 +30,6 @@ export async function getUnraidDetails(
       [ip]: _server,
     };
   });
-
   const map = new Map<string, UnraidServer>();
 
   __servers.forEach((d) => {
