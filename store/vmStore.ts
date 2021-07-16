@@ -1,4 +1,4 @@
-import { VmDetails } from 'models/vm';
+import { VmDetails } from '@models/vm';
 import create from 'zustand';
 
 export interface Vm extends VmDetails {

@@ -1,6 +1,6 @@
 import FormData from 'form-data';
-import { ServerMap } from 'models/server';
-import { authCookies, logInToUrl } from 'lib/auth';
+import { ServerMap } from '@models/server';
+import { authCookies, logInToUrl } from '@lib/auth';
 
 export async function logIn(
   servers: ServerMap,

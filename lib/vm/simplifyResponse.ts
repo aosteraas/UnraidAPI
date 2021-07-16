@@ -1,5 +1,5 @@
 import { gatherDetailsFromEditVM } from './gatherDetailsFromEditVM';
-import { VmDetails } from 'models/vm';
+import { VmDetails } from '@models/vm';
 
 export async function simplifyResponse(
   object,
@@ -24,10 +24,8 @@ export async function simplifyResponse(
     };
     newVMObject.name =
       vm.parent.children[0].children[0].children[1].children[0].contents;
-    newVMObject.id = vm.parent.children[0].children[0].children[0].tags.id.replace(
-      'vm-',
-      '',
-    );
+    newVMObject.id =
+      vm.parent.children[0].children[0].children[0].tags.id.replace('vm-', '');
     newVMObject.status =
       vm.parent.children[0].children[0].children[1].children[1].children[1].contents;
     newVMObject.icon =

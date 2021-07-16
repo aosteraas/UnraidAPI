@@ -1,4 +1,4 @@
-import { authCookies } from 'lib/auth';
+import { authCookies } from '@lib/auth';
 import { failed } from './failed';
 
 export function callFailed(ip: string, status: number): void {

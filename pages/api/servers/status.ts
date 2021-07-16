@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
-import { getCSRFToken } from 'lib/auth';
-import { ApiBodyRequest } from 'models/api';
-import { changeServerState, Action } from 'lib/unraid';
+import { getCSRFToken } from '@lib/auth';
+import { ApiBodyRequest } from '@models/api';
+import { changeServerState, Action } from '@lib/unraid';
 
 interface ServerStatusBody {
   action: Action;

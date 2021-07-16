@@ -1,4 +1,4 @@
-import { PciDetail } from 'models/pci';
+import { PciDetail } from '@models/pci';
 import { extractValue } from './extractValue';
 
 export function extractPCIData(response: { data: string }): PciDetail[] {

@@ -1,4 +1,4 @@
-import { readDisabledDevices, writeDisabledDevices } from 'lib/storage';
+import { readDisabledDevices, writeDisabledDevices } from '@lib/storage';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // mqttDevices

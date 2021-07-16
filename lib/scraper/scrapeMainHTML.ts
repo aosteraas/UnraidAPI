@@ -1,8 +1,8 @@
 import { extractValue } from './extractValue';
 import { extractReverseValue } from './extractReverseValue';
-import { callSucceeded, callFailed } from 'lib/api';
-import { authCookies } from 'lib/auth';
-import { unraidApi } from 'lib/unraid';
+import { callSucceeded, callFailed } from '@lib/api';
+import { authCookies } from '@lib/auth';
+import { unraidApi } from '@lib/unraid';
 
 interface ServerMainDetails {
   arrayStatus: string;

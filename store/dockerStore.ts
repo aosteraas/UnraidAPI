@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { DockerContainer } from 'models/docker';
+import { DockerContainer } from '@models/docker';
 
 export interface Container extends DockerContainer {
   isBusy: boolean;

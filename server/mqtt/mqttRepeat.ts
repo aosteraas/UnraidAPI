@@ -1,4 +1,4 @@
-import { getMqttConfig } from 'lib/config';
+import { getMqttConfig } from '@lib/config';
 import { MqttClient } from 'mqtt';
 import { updateMQTT } from './updateMQTT';
 

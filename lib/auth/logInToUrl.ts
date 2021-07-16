@@ -1,5 +1,5 @@
 import http from 'http';
-import { unraidApi } from 'lib/unraid/unraidApi';
+import { unraidApi } from '@lib/unraid/unraidApi';
 import { authCookies } from '.';
 
 export async function logInToUrl(url: string, data, ip: string): Promise<any> {

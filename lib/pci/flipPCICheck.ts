@@ -1,4 +1,4 @@
-import { PciDetail } from 'models/pci';
+import { PciDetail } from '@models/pci';
 
 export function flipPCICheck(details: { pcis: PciDetail[] }, id: string) {
   let check: boolean;

@@ -1,4 +1,4 @@
-import { SoundPciDetail } from 'models/pci';
+import { SoundPciDetail } from '@models/pci';
 import { extractValue } from './extractValue';
 
 export function extractSoundData(response: { data: string }, vmObject): void {

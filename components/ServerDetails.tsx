@@ -1,8 +1,8 @@
 import { Wrap, Badge } from '@chakra-ui/layout';
 import { Button, Flex } from '@chakra-ui/react';
 import { useArrayManager } from 'hooks/useArrayManager';
-import { isDefined } from 'lib/utils';
-import { ServerDetails as Details } from 'models/server';
+import { isDefined } from '@lib/utils';
+import { ServerDetails as Details } from '@models/server';
 
 interface Props {
   details?: Details;

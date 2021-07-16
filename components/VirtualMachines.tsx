@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 import { useVmManager } from 'hooks';
-import { VmDetailsMap } from 'models/vm';
+import { VmDetailsMap } from '@models/vm';
 import React from 'react';
 import { VirtualMachine } from './VirtualMachine';
 

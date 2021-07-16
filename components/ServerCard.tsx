@@ -1,4 +1,4 @@
-import { UnraidServer } from 'models/server';
+import { UnraidServer } from '@models/server';
 import {
   Flex,
   Heading,

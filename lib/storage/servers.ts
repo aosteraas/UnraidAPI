@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { CONFIG_DIR, SERVERS_JSON } from 'lib/config';
-import { ServerMap } from 'models/server';
+import { CONFIG_DIR, SERVERS_JSON } from '@lib/config';
+import { ServerMap } from '@models/server';
 
 /**
  * Reads in the contents of config/servers.json. Returns empty object when

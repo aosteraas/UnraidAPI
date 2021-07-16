@@ -1,4 +1,4 @@
-import { GpuPciDetail, GpuVncDetail, SoundPciDetail } from 'models/pci';
+import { GpuPciDetail, GpuVncDetail, SoundPciDetail } from '@models/pci';
 
 export interface VmMap {
   [key: string]: Vm;

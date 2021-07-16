@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getImage } from 'lib/unraid';
-import { parseServers } from 'lib/storage/servers';
-import { ServerMap } from 'models/server';
+import { getImage } from '@lib/unraid';
+import { parseServers } from '@lib/storage/servers';
+import { ServerMap } from '@models/server';
 
 async function proxyImage(
   req: NextApiRequest,

@@ -1,6 +1,6 @@
-import { getMqttConfig } from 'lib/config';
-import { UnraidServer } from 'models/server';
-import { VmDetails } from 'models/vm';
+import { getMqttConfig } from '@lib/config';
+import { UnraidServer } from '@models/server';
+import { VmDetails } from '@models/vm';
 import { MqttClient } from 'mqtt';
 import { sanitise } from './sanitise';
 

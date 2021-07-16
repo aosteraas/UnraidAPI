@@ -1,7 +1,7 @@
 import { authCookies } from './authCookies';
-import { callSucceeded, callFailed } from 'lib/api';
-import { extractValue } from 'lib/scraper';
-import { unraidApi } from 'lib/unraid';
+import { callSucceeded, callFailed } from '@lib/api';
+import { extractValue } from '@lib/scraper';
+import { unraidApi } from '@lib/unraid';
 
 export async function getCSRFToken(
   server: string,

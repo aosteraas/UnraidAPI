@@ -1,4 +1,4 @@
-import { VmEditNic } from 'models/vm';
+import { VmEditNic } from '@models/vm';
 
 export function getNetworkPart(vmObject: { nics?: VmEditNic[] }, form: string) {
   if (vmObject?.nics?.length > 0) {

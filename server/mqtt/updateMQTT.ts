@@ -4,9 +4,9 @@ import {
   keyStorageChecker,
   parseServers,
   readDisabledDevices,
-} from 'lib/storage/';
-import { getUnraidDetails } from 'lib/unraid';
-import { getMqttConfig } from 'lib/config';
+} from '@lib/storage/';
+import { getUnraidDetails } from '@lib/unraid';
+import { getMqttConfig } from '@lib/config';
 
 export async function updateMQTT(client: MqttClient): Promise<void> {
   try {

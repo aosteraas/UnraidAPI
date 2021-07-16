@@ -1,4 +1,4 @@
-import { VmEdit } from 'models/vm';
+import { VmEdit } from '@models/vm';
 
 export function getStaticPart(
   vmObject: VmEdit,

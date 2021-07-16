@@ -1,9 +1,9 @@
-import { parseServers } from 'lib/storage';
-import { VmDetails } from 'models/vm';
-import { callSucceeded, callFailed } from 'lib/api';
-import { authCookies } from 'lib/auth';
-import { extractVMDetails } from 'lib/scraper';
-import { unraidApi } from 'lib/unraid';
+import { parseServers } from '@lib/storage';
+import { VmDetails } from '@models/vm';
+import { callSucceeded, callFailed } from '@lib/api';
+import { authCookies } from '@lib/auth';
+import { extractVMDetails } from '@lib/scraper';
+import { unraidApi } from '@lib/unraid';
 
 export async function gatherDetailsFromEditVM(
   ip: string,

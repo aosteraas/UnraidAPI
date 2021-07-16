@@ -1,22 +1,22 @@
 import mqtt from 'mqtt';
 import fs from 'fs';
 import uniqid from 'uniqid';
-import { UnraidServer } from 'models/server';
-import { VmDetails } from 'models/vm';
-import { DockerContainer } from 'models/docker';
+import { UnraidServer } from '@models/server';
+import { VmDetails } from '@models/vm';
+import { DockerContainer } from '@models/docker';
 import { updateMQTT } from './updateMQTT';
 import { mqttRepeat } from './mqttRepeat';
 import { sanitise } from './sanitise';
 import { getServerDetails } from './getServerDetails';
 import { getDockerDetails } from './getDockerDetails';
 import { getVMDetails } from './getVMDetails';
-import { getCSRFToken } from 'lib/auth';
-import { changeVMState, attachUSB, detachUSB } from 'lib/vm';
-import { changeArrayState } from 'lib/array';
-import { changeDockerState } from 'lib/docker';
-import { changeServerState } from 'lib/unraid';
-import { parseServers, readMqttKeys } from 'lib/storage';
-import { getMqttConfig } from 'lib/config';
+import { getCSRFToken } from '@lib/auth';
+import { changeVMState, attachUSB, detachUSB } from '@lib/vm';
+import { changeArrayState } from '@lib/array';
+import { changeDockerState } from '@lib/docker';
+import { changeServerState } from '@lib/unraid';
+import { parseServers, readMqttKeys } from '@lib/storage';
+import { getMqttConfig } from '@lib/config';
 
 let retry;
 
@@ -42,13 +42,8 @@ export function startMQTTClient(): void {
   this.getVMDetails = getVMDetails.bind(this);
   this.getDockerDetails = getDockerDetails.bind(this);
   this.getServerDetails = getServerDetails.bind(this);
-  const {
-    MQTTBaseTopic,
-    MQTTUser,
-    MQTTPass,
-    MQTTPort,
-    MQTTBroker,
-  } = getMqttConfig();
+  const { MQTTBaseTopic, MQTTUser, MQTTPass, MQTTPort, MQTTBroker } =
+    getMqttConfig();
 
   const options = {
     username: MQTTUser,

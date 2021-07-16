@@ -1,4 +1,4 @@
-import { VmDetailsMap } from 'models/vm';
+import { VmDetailsMap } from '@models/vm';
 import { useEffect } from 'react';
 import { ApiRoute } from 'routes';
 import { useVmStore, Vm } from 'store/vmStore';

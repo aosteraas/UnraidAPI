@@ -1,7 +1,7 @@
 import http from 'http';
-import { callSucceeded, callFailed } from 'lib/api';
-import { authCookies } from 'lib/auth';
-import { unraidApi } from 'lib/unraid';
+import { callSucceeded, callFailed } from '@lib/api';
+import { authCookies } from '@lib/auth';
+import { unraidApi } from '@lib/unraid';
 
 export async function changeArrayState(
   action: string,

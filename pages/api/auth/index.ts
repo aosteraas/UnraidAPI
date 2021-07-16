@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
-import { ApiBodyRequest, LoginBody } from 'models/api/';
-import { parseServers, writeServersJson } from 'lib/storage/servers';
-import { keyStorageChecker, writeMqttKeys } from 'lib/storage/secure';
+import { ApiBodyRequest, LoginBody } from '@models/api/';
+import { parseServers, writeServersJson } from '@lib/storage/servers';
+import { keyStorageChecker, writeMqttKeys } from '@lib/storage/secure';
 
 export default async function (
   req: ApiBodyRequest<LoginBody>,

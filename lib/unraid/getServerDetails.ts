@@ -1,6 +1,6 @@
-import { ServerMap, UnraidServer } from 'models/server';
-import { scrapeHTML, scrapeMainHTML } from 'lib/scraper';
-import { updateFile } from 'lib/storage';
+import { ServerMap, UnraidServer } from '@models/server';
+import { scrapeHTML, scrapeMainHTML } from '@lib/scraper';
+import { updateFile } from '@lib/storage';
 
 export async function getServerDetails(
   servers: ServerMap,
@@ -23,7 +23,7 @@ export async function getServerDetails(
 
     servers[ip].serverDetails.on = servers[ip].status === 'online';
     return servers[ip];
-    await updateFile(servers, ip, 'serverDetails');
+    // await updateFile(servers, ip, 'serverDetails');
   });
   return await Promise.all(res);
 }

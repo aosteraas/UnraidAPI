@@ -1,4 +1,4 @@
-import { ServerMap } from 'models/server';
+import { ServerMap } from '@models/server';
 import { parseServers, writeServersJson } from './servers';
 
 export async function updateFile(

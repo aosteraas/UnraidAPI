@@ -1,4 +1,4 @@
-import { VmEditDisk } from 'models/vm';
+import { VmEditDisk } from '@models/vm';
 import { extractReverseValue } from './extractReverseValue';
 import { extractValue } from './extractValue';
 

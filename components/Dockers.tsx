@@ -1,4 +1,4 @@
-import { DockerContainer as Container } from 'models/docker';
+import { DockerContainer as Container } from '@models/docker';
 import { Flex } from '@chakra-ui/react';
 import { DockerContainer } from './DockerContainer';
 import { useDockerManager } from 'hooks';

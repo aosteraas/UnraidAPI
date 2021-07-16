@@ -1,9 +1,9 @@
 import { extractDiskDetails } from './extractDiskDetails';
-import { authCookies } from 'lib/auth';
+import { authCookies } from '@lib/auth';
 import { extractValue } from './extractValue';
 import { extractReverseValue } from './extractReverseValue';
-import { callFailed, callSucceeded } from 'lib/api';
-import { unraidApi } from 'lib/unraid';
+import { callFailed, callSucceeded } from '@lib/api';
+import { unraidApi } from '@lib/unraid';
 
 interface ServerCoreDetails {
   title: string;

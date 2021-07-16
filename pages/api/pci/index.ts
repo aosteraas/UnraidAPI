@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { requestChange } from 'lib/api';
-import { getCSRFToken } from 'lib/auth';
-import { removePCICheck, addPCICheck } from 'lib/pci';
-import { parseServers } from 'lib/storage';
-import { changeVMState, gatherDetailsFromEditVM } from 'lib/vm';
+import { requestChange } from '@lib/api';
+import { getCSRFToken } from '@lib/auth';
+import { removePCICheck, addPCICheck } from '@lib/pci';
+import { parseServers } from '@lib/storage';
+import { changeVMState, gatherDetailsFromEditVM } from '@lib/vm';
 
 async function pciAttach(
   { body }: NextApiRequest,

@@ -1,7 +1,7 @@
-import { Docker } from 'models/docker';
-import { PciDetail } from 'models/pci';
-import { UsbDetail } from 'models/usb';
-import { Vm } from 'models/vm';
+import { Docker } from '@models/docker';
+import { PciDetail } from '@models/pci';
+import { UsbDetail } from '@models/usb';
+import { Vm } from '@models/vm';
 
 export interface ServerDetails {
   arrayStatus?: string;

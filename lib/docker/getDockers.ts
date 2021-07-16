@@ -1,17 +1,16 @@
-import { ServerMap, UnraidServer } from 'models/server';
-import { callSucceeded, callFailed } from 'lib/api';
-import { authCookies } from 'lib/auth';
-import { parseHTML } from 'lib/scraper';
-import { updateFile } from 'lib/storage';
+import { ServerMap, UnraidServer } from '@models/server';
+import { callSucceeded, callFailed } from '@lib/api';
+import { authCookies } from '@lib/auth';
+import { parseHTML } from '@lib/scraper';
 import { processDockerResponse } from './processDockerResponse';
-import { unraidApi } from 'lib/unraid';
+import { unraidApi } from '@lib/unraid';
 
 export async function getDockers(
   servers: ServerMap,
   serverAuth: Record<string, string>,
 ): Promise<UnraidServer[]> {
   // const serverIps = Object.keys(servers);
-
+  console.log({ serverAuth });
   const all = Object.keys(servers).map(async (ip) => {
     if (!serverAuth[ip]) {
       return;
@@ -19,7 +18,7 @@ export async function getDockers(
     const url = `${
       ip.includes('http') ? ip : `http://${ip}`
     }/plugins/dynamix.docker.manager/include/DockerContainers.php`;
-
+    console.log({ Cookie: authCookies.get(ip) });
     const res = await unraidApi({
       method: 'get',
       url,

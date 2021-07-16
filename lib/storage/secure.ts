@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { getKeyStorage, MQTT_KEYS } from 'lib/config';
-import { MqttKeyMap } from 'models/mqtt';
+import { getKeyStorage, MQTT_KEYS } from '@lib/config';
+import { MqttKeyMap } from '@models/mqtt';
 
 /**
  * Create necessary directories and files if they do not exist and return Mqtt

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getUnraidDetails } from 'lib/unraid';
-import { parseServers, readMqttKeys } from 'lib/storage';
-import { getKeyStorage } from 'lib/config';
+import { getUnraidDetails } from '@lib/unraid';
+import { parseServers, readMqttKeys } from '@lib/storage';
+import { getKeyStorage } from '@lib/config';
 
 // getServers
 async function getServers(

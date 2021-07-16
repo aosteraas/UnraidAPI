@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
 import { logIn } from './logIn';
-import { authCookies } from 'lib/auth';
-import { ServerMap } from 'models/server';
-import { readMqttKeys } from 'lib/storage';
+import { authCookies } from '@lib/auth';
+import { ServerMap } from '@models/server';
+import { readMqttKeys } from '@lib/storage';
 import { NextApiResponse } from 'next';
 
 export async function getImage(

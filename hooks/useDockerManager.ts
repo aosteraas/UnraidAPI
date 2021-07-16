@@ -1,4 +1,4 @@
-import { DockerContainer } from 'models/docker';
+import { DockerContainer } from '@models/docker';
 import { useEffect } from 'react';
 import { ApiRoute } from 'routes';
 import { useDockerStore, Container } from 'store/dockerStore';

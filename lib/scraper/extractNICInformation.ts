@@ -1,4 +1,4 @@
-import { VmEditNic } from 'models/vm';
+import { VmEditNic } from '@models/vm';
 import { extractReverseValue } from './extractReverseValue';
 import { extractValue } from './extractValue';
 

@@ -1,8 +1,8 @@
 import { gatherDetailsFromEditVM } from './gatherDetailsFromEditVM';
-import { requestChange } from 'lib/api';
-import { VmAttachUsbs, VmDetails, VmEdit } from 'models/vm';
-import { parseServers } from 'lib/storage';
-import { UsbBody } from 'models/api';
+import { requestChange } from '@lib/api';
+import { VmAttachUsbs, VmDetails, VmEdit } from '@models/vm';
+import { parseServers } from '@lib/storage';
+import { UsbBody } from '@models/api';
 
 export async function attachUSB(data: UsbBody): Promise<string> {
   const vmObject = await gatherDetailsFromEditVM(

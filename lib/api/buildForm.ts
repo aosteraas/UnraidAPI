@@ -1,4 +1,4 @@
-import { getCSRFToken } from 'lib/auth';
+import { getCSRFToken } from '@lib/auth';
 import {
   getCPUPart,
   getStaticPart,
@@ -6,9 +6,9 @@ import {
   getDiskPart,
   getNetworkPart,
   getSharePart,
-} from 'lib/unraid';
-import { getPCIPart } from 'lib/pci';
-import { VmEdit } from 'models/vm';
+} from '@lib/unraid';
+import { getPCIPart } from '@lib/pci';
+import { VmEdit } from '@models/vm';
 
 export async function buildForm(
   ip: string,

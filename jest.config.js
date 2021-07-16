@@ -1,24 +1,16 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const { pathsToModuleNameMapper } = require('ts-jest/utils');
+// In the following statement, replace `./tsconfig` with the path to your `tsconfig` file
+// which contains the path mapping (ie the `compilerOptions.paths` option):
+const { compilerOptions } = require('./tsconfig');
+console.log({ compilerOptions });
+const pathts = pathsToModuleNameMapper(compilerOptions.paths, {
+  prefix: '<rootDir>/',
+});
+console.log({ pathts });
 module.exports = {
-  moduleFileExtensions: ['js', 'jsx', 'json', 'vue'],
-  transform: {
-    '^.+\\.vue$': 'vue-jest',
-    '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$':
-      'jest-transform-stub',
-    '^.+\\.(js|jsx)?$': "babel-jest",
-  },
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1'
-  },
-  snapshotSerializers: ['jest-serializer-vue'],
-  testMatch: [
-    '<rootDir>/(test/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx))'
-  ],
-  transformIgnorePatterns: ['<rootDir>/node_modules/'],
-  collectCoverage: true,
-  collectCoverageFrom: [
-    '<rootDir>/api/**/*.js',
-    '<rootDir>/utils/**/*.js',
-    '<rootDir>/components/**/*.vue',
-    '<rootDir>/pages/**/*.vue'
-  ],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  moduleNameMapper: pathts,
 };

@@ -1,5 +1,5 @@
 import http from 'http';
-import { authCookies } from 'lib/auth';
+import { authCookies } from '@lib/auth';
 import { unraidApi } from './unraidApi';
 
 export type Action =

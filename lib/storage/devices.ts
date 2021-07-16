@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { CONFIG_DIR, DISABLED_DEVICES } from 'lib/config';
+import { CONFIG_DIR, DISABLED_DEVICES } from '@lib/config';
 import path from 'path';
 
 // TODO shape of this data?

@@ -1,8 +1,8 @@
-import { ServerMap, UnraidServer } from 'models/server';
-import { callSucceeded, callFailed } from 'lib/api';
-import { authCookies } from 'lib/auth';
-import { extractValue } from 'lib/scraper';
-import { updateFile } from 'lib/storage';
+import { ServerMap, UnraidServer } from '@models/server';
+import { callSucceeded, callFailed } from '@lib/api';
+import { authCookies } from '@lib/auth';
+import { extractValue } from '@lib/scraper';
+import { updateFile } from '@lib/storage';
 import { unraidApi } from './unraidApi';
 
 export async function getUSBDetails(
@@ -32,7 +32,7 @@ export async function getUSBDetails(
         },
       });
       callSucceeded(ip);
-      updateFile(servers, ip, 'status');
+      // updateFile(servers, ip, 'status');
 
       servers[ip].usbDetails = [];
       while (res.data.toString().includes('<label for="usb')) {

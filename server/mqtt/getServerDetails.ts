@@ -2,8 +2,8 @@ import { MqttClient } from 'mqtt';
 import { sanitise } from './sanitise';
 import { getDockerDetails } from './getDockerDetails';
 import { getVMDetails } from './getVMDetails';
-import { getMqttConfig } from 'lib/config';
-import { ServerMap } from 'models/server';
+import { getMqttConfig } from '@lib/config';
+import { ServerMap } from '@models/server';
 
 const updated: Record<string, any> = {};
 

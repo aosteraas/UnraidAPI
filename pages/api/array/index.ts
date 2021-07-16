@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
-import { ApiBodyRequest } from 'models/api';
-import { getCSRFToken } from 'lib/auth';
-import { changeArrayState } from 'lib/array';
+import { ApiBodyRequest } from '@models/api';
+import { getCSRFToken } from '@lib/auth';
+import { changeArrayState } from '@lib/array';
 
 interface ArrayBody {
   server: string;

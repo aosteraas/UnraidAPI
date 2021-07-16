@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
-import { ApiBodyRequest, UsbBody } from 'models/api';
-import { attachUSB, reattachUSB, detachUSB } from 'lib/vm/attachUSB';
+import { ApiBodyRequest, UsbBody } from '@models/api';
+import { attachUSB, reattachUSB, detachUSB } from '@lib/vm/attachUSB';
 
 export default async function (
   req: ApiBodyRequest<UsbBody | undefined>,

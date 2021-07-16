@@ -1,8 +1,6 @@
-import { DockerImage } from 'models/docker';
+import { DockerImage } from '@models/docker';
 
-export function processDockerResponse(
-  details,
-): {
+export function processDockerResponse(details): {
   images: Record<string, DockerImage>;
   containers: any;
 } {
@@ -25,9 +23,10 @@ export function processDockerResponse(
           if (child.tags.class) {
             switch (child.tags.class) {
               case 'ct-name':
-                docker.imageUrl = child.children[0].children[0].children[0].tags.src.split(
-                  '?',
-                )[0];
+                docker.imageUrl =
+                  child.children[0].children[0].children[0].tags.src.split(
+                    '?',
+                  )[0];
                 if (child.children[0].children[1].children[0].children[0]) {
                   docker.name =
                     child.children[0].children[1].children[0].children[0].contents;

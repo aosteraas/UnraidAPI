@@ -2,9 +2,9 @@ import http from 'http';
 import { callFailed } from './callFailed';
 import { callSucceeded } from './callSucceeded';
 import { buildForm } from './buildForm';
-import { authCookies } from 'lib/auth';
-import { VmEdit } from 'models/vm';
-import { unraidApi } from 'lib/unraid';
+import { authCookies } from '@lib/auth';
+import { VmEdit } from '@models/vm';
+import { unraidApi } from '@lib/unraid';
 
 export async function requestChange(
   ip: string,

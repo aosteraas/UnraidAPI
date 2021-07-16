@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ServerMap, UnraidServer } from 'models/server';
+import { ServerMap, UnraidServer } from '@models/server';
 import { Flex } from '@chakra-ui/react';
 import { ApiRoute } from 'routes';
 import { ServerCard } from './ServerCard';
@@ -21,7 +21,7 @@ export function Servers(): JSX.Element {
   };
 
   useEffect(() => {
-    const timer = setInterval(getDetails, 5000);
+    const timer = setInterval(getDetails, 7500);
     return () => clearTimeout(timer);
   }, []);
 

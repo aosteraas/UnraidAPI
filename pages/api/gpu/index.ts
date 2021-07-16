@@ -1,11 +1,11 @@
 import { NextApiResponse } from 'next';
-import { requestChange } from 'lib/api';
-import { getCSRFToken } from 'lib/auth';
-import { removePCICheck, flipPCICheck, addPCICheck } from 'lib/pci';
-import { gatherDetailsFromEditVM, changeVMState } from 'lib/vm';
-import { ApiBodyRequest } from 'models/api';
-import { GpuPciDetail } from 'models/pci';
-import { PciType } from 'models/vm';
+import { requestChange } from '@lib/api';
+import { getCSRFToken } from '@lib/auth';
+import { removePCICheck, flipPCICheck, addPCICheck } from '@lib/pci';
+import { gatherDetailsFromEditVM, changeVMState } from '@lib/vm';
+import { ApiBodyRequest } from '@models/api';
+import { GpuPciDetail } from '@models/pci';
+import { PciType } from '@models/vm';
 
 interface GpuSwapBody {
   server: string;

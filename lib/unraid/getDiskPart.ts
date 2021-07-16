@@ -1,4 +1,4 @@
-import { VmEditDisk } from 'models/vm';
+import { VmEditDisk } from '@models/vm';
 
 export function getDiskPart(vmObject: { disks?: VmEditDisk[] }, form: string) {
   if (vmObject?.disks?.length > 0) {

@@ -1,4 +1,4 @@
-import { parseServers, writeServersJson } from 'lib/storage/servers';
+import { parseServers, writeServersJson } from '@lib/storage/servers';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // deleteServer

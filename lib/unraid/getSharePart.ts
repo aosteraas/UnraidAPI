@@ -1,4 +1,4 @@
-import { VmEditShare } from 'models/vm';
+import { VmEditShare } from '@models/vm';
 
 export function getSharePart(
   vmObject: { shares?: VmEditShare[] },

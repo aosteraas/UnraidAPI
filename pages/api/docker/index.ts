@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
-import { getCSRFToken } from 'lib/auth';
-import { changeDockerState } from 'lib/docker/changeDockerState';
-import { ApiBodyRequest } from 'models/api';
+import { getCSRFToken } from '@lib/auth';
+import { changeDockerState } from '@lib/docker/changeDockerState';
+import { ApiBodyRequest } from '@models/api';
 
 interface DockerBody {
   id: string;

@@ -1,7 +1,7 @@
-import { requestChange } from 'lib/api';
-import { getCSRFToken } from 'lib/auth';
-import { changeVMState, gatherDetailsFromEditVM } from 'lib/vm';
-import { ApiBodyRequest } from 'models/api';
+import { requestChange } from '@lib/api';
+import { getCSRFToken } from '@lib/auth';
+import { changeVMState, gatherDetailsFromEditVM } from '@lib/vm';
+import { ApiBodyRequest } from '@models/api';
 import { NextApiResponse } from 'next';
 
 interface EditVmBody {

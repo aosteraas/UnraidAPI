@@ -1,5 +1,5 @@
-import { ServerMap, UnraidServer } from 'models/server';
-import { updateFile } from 'lib/storage';
+import { ServerMap, UnraidServer } from '@models/server';
+import { updateFile } from '@lib/storage';
 
 export async function getPCIDetails(
   servers: ServerMap,

@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
-import { getCSRFToken } from 'lib/auth';
-import { ApiBodyRequest } from 'models/api';
-import { changeVMState } from 'lib/vm/changeVMState';
+import { getCSRFToken } from '@lib/auth';
+import { ApiBodyRequest } from '@models/api';
+import { changeVMState } from '@lib/vm/changeVMState';
 
 interface VmStatusBody {
   id: string;

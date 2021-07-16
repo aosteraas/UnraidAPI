@@ -1,7 +1,7 @@
 import http from 'http';
-import { callFailed, callSucceeded } from 'lib/api';
-import { authCookies } from 'lib/auth';
-import { unraidApi } from 'lib/unraid';
+import { callFailed, callSucceeded } from '@lib/api';
+import { authCookies } from '@lib/auth';
+import { unraidApi } from '@lib/unraid';
 
 export async function changeDockerState(
   id: string,
