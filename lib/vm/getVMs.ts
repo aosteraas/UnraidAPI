@@ -2,7 +2,7 @@ import { ServerMap, UnraidServer } from '@models/server';
 import { callSucceeded, callFailed } from '@lib/api';
 import { authCookies } from '@lib/auth';
 import { parseHTML } from '@lib/scraper';
-import { updateFile } from '../storage/updateFile';
+import { updateFile } from '@lib/storage';
 import { processVMResponse } from './processVMResponse';
 import { unraidApi } from '@lib/unraid';
 import { VmDetails } from '@models/vm';
