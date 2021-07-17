@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parses server main html 1`] = `
+Object {
+  "arrayProtection": true,
+  "arrayStatus": "STARTED",
+  "moverRunning": false,
+  "parityCheckRunning": false,
+}
+`;
