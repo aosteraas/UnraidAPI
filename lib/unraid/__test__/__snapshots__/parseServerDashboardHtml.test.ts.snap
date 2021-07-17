@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parses server dashboard html 1`] = `
+Object {
+  "arrayFreeSpace": "831 GB",
+  "arrayTotalSpace": "1 TB",
+  "arrayUsedSpace": "193 GB",
+  "cacheFreeSpace": "14 TB",
+  "cacheSpace": "12.4 TB used of 26 TB (47.6 %)",
+  "cacheTotalSpace": "26 TB",
+  "cacheUsedSpace": "12.4 TB",
+  "cpu": "Intel® Core™ i5-9600K CPU @ 3.70GHz",
+  "diskSpace": "193 GB used of 1 TB (19.3 %)",
+  "memory": "16 GiB DDR4 ",
+  "motherboard": "ASRock Z390 Pro4",
+  "title": "Tower/Dashboard",
+  "version": "todo",
+}
+`;
