@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Parses raw VM HTML into array of VM data and extras string 1`] = `
+Array [
+  Object {
+    "cores": "2",
+    "hddTotal": "1 / 20G",
+    "id": "1d608caf-a589-395f-121a-c6c70f9abac6",
+    "imageUrl": "/plugins/dynamix.vm.manager/templates/images/ubuntu.png",
+    "memory": "",
+    "name": "Lubuntu",
+    "status": "stopped",
+  },
+  Object {
+    "cores": "1",
+    "hddTotal": "1 / 2G",
+    "id": "3c15a77b-7917-514e-91e5-3aa32c29f919",
+    "imageUrl": "/plugins/dynamix.vm.manager/templates/images/ubuntu.png",
+    "memory": "",
+    "name": "Ubuntu",
+    "status": "stopped",
+  },
+]
+`;
+
+exports[`Parses raw VM HTML into array of VM data and extras string 2`] = `""`;
