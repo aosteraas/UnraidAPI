@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Processes raw Docker HTML into array of containers 1`] = `
+Array [
+  Object {
+    "id": "9938ae3781a6",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/AirConnect-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "a84b20a370de",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/binhex-plex-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "b63993dcef0f",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/binhex-sickchill-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "32b1384edfd2",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/HomeAssistantCore-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "d2e69379be47",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/NginxProxyManager-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "c3fde85eeea4",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/postgresql-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "stopped",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "09db804639b5",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/qbittorrentvpn-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "8d28bb268dcb",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/redis-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "stopped",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "713c6cc1b2b9",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/shinobi_pro-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "f84c9a6e1535",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/TeamCity-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "60f2290f844c",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/TeamCity-agent-nodejs-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "started",
+    "tag": "
+      ",
+  },
+  Object {
+    "id": "ef5c77482592",
+    "imageUrl": "/state/plugins/dynamix.docker.manager/images/Unraid-API-icon.png?1625388428",
+    "name": "
+      ",
+    "status": "stopped",
+    "tag": "
+      ",
+  },
+]
+`;
