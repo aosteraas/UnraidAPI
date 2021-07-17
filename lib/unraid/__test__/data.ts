@@ -3502,3 +3502,1945 @@ $(function() {
 </body>
 </html>
 `;
+
+export const usbHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Tower/UpdateVM</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Security-Policy" content="block-all-mixed-content">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=1600">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="same-origin">
+<link type="image/png" rel="shortcut icon" href="/webGui/images/green-on.png">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/default-fonts.css?v=1607102280">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/default-cases.css?v=1586620022">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/font-awesome.css?v=1545863026">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/context.standalone.css?v=1616868912">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/jquery.sweetalert.css?v=1616868912">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/default-black.css?v=1603267810">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/dynamix-black.css?v=1606841542">
+
+<style>
+.inline_help{display:none}
+.upgrade_notice{position:fixed;top:1px;left:0;width:100%;height:40px;line-height:40px;color:#e68a00;background:#feefb3;border-bottom:#e68a00 1px solid;text-align:center;font-size:1.4rem;z-index:999}
+.upgrade_notice i{margin:14px;float:right;cursor:pointer}
+.back_to_top{display:none;position:fixed;bottom:30px;right:12px;color:#e22828;font-size:2.5rem;z-index:999}
+#header.image{background-image:url(/webGui/images/banner.png)}
+</style>
+
+<script src="/webGui/javascript/dynamix.js?v=1596576684"></script>
+<script src="/webGui/javascript/translate.en_US.js?v=1589088326"></script>
+<script>
+Shadowbox.init({skipSetup:true});
+
+// server uptime
+var uptime = 1176691.62;
+var expiretime = 0;
+var before = new Date();
+
+// page timer events
+var timers = {};
+
+function pauseEvents(id) {
+  $.each(timers, function(i,timer){
+    if (!id || i==id) clearTimeout(timer);
+  });
+}
+function resumeEvents(id,delay) {
+  var startDelay = delay||50;
+  $.each(timers, function(i,timer) {
+    if (!id || i==id) timers[i] = setTimeout(i+'()', startDelay);
+    startDelay += 50;
+  });
+}
+function plus(value,single,plural,last) {
+  return value>0 ? (value+' '+(value==1?single:plural)+(last?'':', ')) : '';
+}
+function updateTime() {
+  var now = new Date();
+  var days = parseInt(uptime/86400);
+  var hour = parseInt(uptime/3600%24);
+  var mins = parseInt(uptime/60%60);
+  $('span.uptime').html(((days|hour|mins)?plus(days,"day","days",(hour|mins)==0)+plus(hour,"hour","hours",mins==0)+plus(mins,"minute","minutes",true):"less than a minute"));
+  uptime += Math.round((now.getTime() - before.getTime())/1000);
+  before = now;
+  if (expiretime > 0) {
+    var remainingtime = expiretime - now.getTime()/1000;
+    if (remainingtime > 0) {
+      days = parseInt(remainingtime/86400);
+      hour = parseInt(remainingtime/3600%24);
+      mins = parseInt(remainingtime/60%60);
+      if (days) {
+        $('#licenseexpire').html(plus(days,"day","days",true)+" remaining");
+      } else if (hour) {
+        $('#licenseexpire').html(plus(hour,"hour","hours",true)+" remaining").addClass('orange-text');
+      } else if (mins) {
+        $('#licenseexpire').html(plus(mins,"minute","minutes",true)+" remaining").addClass('red-text');
+      } else {
+        $('#licenseexpire').html("less than a minute remaining").addClass('red-text');
+      }
+    } else {
+      $('#licenseexpire').addClass('red-text');
+    }
+  }
+  setTimeout(updateTime,1000);
+}
+function refresh(top) {
+  if (typeof top === 'undefined') {
+    for (var i=0,element; element=document.querySelectorAll('input,button,select')[i]; i++) { element.disabled = true; }
+    for (var i=0,link; link=document.getElementsByTagName('a')[i]; i++) { link.style.color = "gray"; } //fake disable
+    location = location;
+  } else {
+    $.cookie('top',top,{path:'/'});
+    location = location;
+  }
+}
+function initab() {
+  $.removeCookie('one',{path:'/'});
+  $.removeCookie('tab',{path:'/'});
+}
+function settab(tab) {
+  $.cookie(($.cookie('one')==null?'tab':'one'),tab,{path:'/'});
+}
+function done(key) {
+  var url = location.pathname.split('/');
+  var path = '/'+url[1];
+  if (key) for (var i=2; i<url.length; i++) if (url[i]==key) break; else path += '/'+url[i];
+  $.removeCookie('one',{path:'/'});
+  location.replace(path);
+}
+function chkDelete(form, button) {
+  button.value = form.confirmDelete.checked ? "Delete" : "Apply";
+  button.disabled = false;
+}
+function openBox(cmd,title,height,width,load,func,id) {
+  // open shadowbox window (run in foreground)
+  var uri = cmd.split('?');
+  var run = uri[0].substr(-4)=='.php' ? cmd+(uri[1]?'&':'?')+'done=Done' : '/logging.htm?cmd='+cmd+'&csrf_token=18FA89EE4D74E62D&done=Done';
+  var options = load ? (func ? {modal:true,onClose:function(){setTimeout(func+'('+'"'+(id||'')+'")',0);}} : {modal:true,onClose:function(){location=location;}}) : {modal:false};
+  Shadowbox.open({content:run, player:'iframe', title:title, height:Math.min(height,screen.availHeight), width:Math.min(width,screen.availWidth), options:options});
+}
+function openWindow(cmd,title,height,width) {
+  // open regular window (run in background)
+  var window_name = title.replace(/ /g,"_");
+  var form_html = '<form action="/logging.htm" method="post" target="'+window_name+'">'+'<input type="hidden" name="csrf_token" value="18FA89EE4D74E62D" />'+'<input type="hidden" name="title" value="'+title+'" />';
+  var vars = cmd.split('&');
+  form_html += '<input type="hidden" name="cmd" value="'+vars[0]+'">';
+  for (var i = 1; i < vars.length; i++) {
+    var pair = vars[i].split('=');
+    form_html += '<input type="hidden" name="'+pair[0]+'" value="'+pair[1]+'">';
+  }
+  form_html += '</form>';
+  var form = $(form_html);
+  $('body').append(form);
+  var top = (screen.availHeight-height)/2;
+  if (top < 0) {top = 0; height = screen.availHeight;}
+  var left = (screen.availWidth-width)/2;
+  if (left < 0) {left = 0; width = screen.availWidth;}
+  var options = 'resizeable=yes,scrollbars=yes,height='+height+',width='+width+',top='+top+',left='+left;
+  window.open('', window_name, options);
+  form.submit();
+}
+function showStatus(name,plugin,job) {
+  $.post('/webGui/include/ProcessStatus.php',{name:name,plugin:plugin,job:job},function(status){$(".tabs").append(status);});
+}
+function showFooter(data, id) {
+  if (id !== undefined) $('#'+id).remove();
+  $('#copyright').prepend(data);
+}
+function showNotice(data) {
+  $('#user-notice').html(data.replace(/<a>(.*)<\/a>/,"<a href='/Plugins'>$1</a>"));
+}
+
+// Banner warning system
+
+var bannerWarnings = [];
+var currentBannerWarning = 0;
+var bannerWarningInterval = false;
+var osUpgradeWarning = false;
+
+function addBannerWarning(text,warning=true,noDismiss=false) {
+  var cookieText = text.replace(/[^a-z0-9]/gi,'');
+  if ($.cookie(cookieText) == "true") return false;
+  if (warning) text = "<i class='fa fa-warning' style='float:initial;'></i> "+text;
+  if ( bannerWarnings.indexOf(text) < 0 ) {
+    var arrayEntry = bannerWarnings.push("placeholder") - 1;
+    if (!noDismiss) text = text + "<a class='bannerDismiss' onclick='dismissBannerWarning("+arrayEntry+",&quot;"+cookieText+"&quot;)'></a>";
+    bannerWarnings[arrayEntry] = text;
+  } else return bannerWarnings.indexOf(text);
+
+  if (!bannerWarningInterval) {
+    showBannerWarnings();
+    bannerWarningInterval = setInterval(showBannerWarnings,10000);
+  }
+  return arrayEntry;
+}
+
+function dismissBannerWarning(entry,cookieText) {
+  $.cookie(cookieText,"true",{expires:365,path:'/'});
+  removeBannerWarning(entry);
+}
+
+function removeBannerWarning(entry) {
+  bannerWarnings[entry] = false;
+  showBannerWarnings();
+}
+
+function bannerFilterArray(array) {
+  var newArray = [];
+  array.filter(function(value,index,arr) {
+    if (value) newArray.push(value);
+  });
+  return newArray;
+}
+
+function showBannerWarnings() {
+  var allWarnings = bannerFilterArray(Object.values(bannerWarnings));
+  if (allWarnings.length == 0) {
+    $(".upgrade_notice").hide();
+    clearInterval(bannerWarningInterval);
+    bannerWarningInterval = false;
+    return;
+  }
+  if (currentBannerWarning >= allWarnings.length) currentBannerWarning = 0;
+  $(".upgrade_notice").show().html(allWarnings[currentBannerWarning]);
+  currentBannerWarning++;
+}
+
+function addRebootNotice(message="You must reboot for changes to take effect") {
+  addBannerWarning("<i class='fa fa-warning' style='float:initial;'></i> "+message,false,true);
+  $.post("/plugins/dynamix.plugin.manager/scripts/PluginAPI.php",{action:'addRebootNotice',message:message});
+}
+
+function removeRebootNotice(message="You must reboot for changes to take effect") {
+  var bannerIndex = bannerWarnings.indexOf("<i class='fa fa-warning' style='float:initial;'></i> "+message);
+  if ( bannerIndex < 0 ) {
+    return;
+  }
+  removeBannerWarning(bannerIndex);
+  $.post("/plugins/dynamix.plugin.manager/scripts/PluginAPI.php",{action:'removeRebootNotice',message:message});
+}
+
+function showUpgrade(text,noDismiss=false) {
+  if ($.cookie('os_upgrade')==null) {
+    if (osUpgradeWarning) removeBannerWarning(osUpgradeWarning);
+    osUpgradeWarning = addBannerWarning(text.replace(/<a>(.*)<\/a>/,"<a href='#' onclick='openUpgrade()'>$1</a>").replace(/<b>(.*)<\/b>/,"<a href='#' onclick='document.rebootNow.submit()'>$1</a>"),false,noDismiss);
+  }
+}
+function hideUpgrade(set) {
+  removeBannerWarning(osUpgradeWarning);
+  if (set)
+    $.cookie('os_upgrade','true',{path:'/'});
+  else
+    $.removeCookie('os_upgrade',{path:'/'});
+}
+function openUpgrade() {
+  hideUpgrade();
+  swal({title:"Update Unraid OS",text:"Do you want to update to the new version?",type:'warning',html:true,showCancelButton:true,confirmButtonText:"Proceed",cancelButtonText:"Cancel"},function(){
+    openBox("/plugins/dynamix.plugin.manager/scripts/plugin&arg1=update&arg2=unRAIDServer.plg","Update Unraid OS",600,900,true);
+  });
+}
+function notifier() {
+  var tub1 = 0, tub2 = 0, tub3 = 0;
+  $.post('/webGui/include/Notify.php',{cmd:'get'},function(json) {
+    if (json && /^<!DOCTYPE html>/.test(json)) {
+      // Session is invalid, user has logged out from another tab
+      $(location).attr('href','/');
+    }
+    var data = $.parseJSON(json);
+    $.each(data, function(i, notify) {
+      $.jGrowl(notify.subject+'<br>'+notify.description, {
+        group: notify.importance,
+        header: notify.event+': '+notify.timestamp,
+        theme: notify.file,
+        click: function(e,m,o) { if (notify.link) location=notify.link;},
+        beforeOpen: function(e,m,o){if ($('div.jGrowl-notification').hasClass(notify.file)) return(false);},
+        beforeClose: function(e,m,o){$.post('/webGui/include/Notify.php',{cmd:'archive',file:notify.file});},
+        afterOpen: function(e,m,o){if (notify.link) $(e).css("cursor","pointer");}
+      });
+    });
+    timers.notifier = setTimeout(notifier,5000);
+  });
+}
+function digits(number) {
+  if (number < 10) return 'one';
+  if (number < 100) return 'two';
+  return 'three';
+}
+function openNotifier(filter) {
+  $.post('/webGui/include/Notify.php',{cmd:'get'},function(json) {
+    var data = $.parseJSON(json);
+    $.each(data, function(i, notify) {
+      if (notify.importance == filter) {
+        $.jGrowl(notify.subject+'<br>'+notify.description, {
+          group: notify.importance,
+          header: notify.event+': '+notify.timestamp,
+          theme: notify.file,
+          click: function(e,m,o) { if (notify.link) location=notify.link;},
+          beforeOpen: function(e,m,o){if ($('div.jGrowl-notification').hasClass(notify.file)) return(false);},
+          beforeClose: function(e,m,o){$.post('/webGui/include/Notify.php',{cmd:'archive',file:notify.file});},
+          afterOpen: function(e,m,o){if (notify.link) $(e).css("cursor","pointer");}
+        });
+      }
+    });
+  });
+}
+function closeNotifier(filter) {
+  clearTimeout(timers.notifier);
+  $.post('/webGui/include/Notify.php',{cmd:'get'},function(json) {
+    var data = $.parseJSON(json);
+    $.each(data, function(i, notify) {
+      if (notify.importance == filter) $.post('/webGui/include/Notify.php',{cmd:'archive',file:notify.file});
+    });
+    $('div.jGrowl').find('.'+filter).find('div.jGrowl-close').trigger('click');
+    setTimeout(notifier,100);
+  });
+}
+function viewHistory(filter) {
+  location.replace('/Tools/NotificationsArchive?filter='+filter);
+}
+$(function() {
+  var tab = $.cookie('one')||$.cookie('tab')||'tab1';
+  if (tab=='tab0') tab = 'tab'+$('input[name$="tabs"]').length; else if ($('#'+tab).length==0) {initab(); tab = 'tab1';}
+  if ($.cookie('help')=='help') {$('.inline_help').show(); $('#nav-item.HelpButton').addClass('active');}
+  $('#'+tab).attr('checked', true);
+  updateTime();
+  $.jGrowl.defaults.closeTemplate = '<i class="fa fa-close"></i>';
+  $.jGrowl.defaults.closerTemplate = '<div class="top">[ close all notifications ]</div>';
+  $.jGrowl.defaults.sticky = true;
+  $.jGrowl.defaults.check = 100;
+  $.jGrowl.defaults.position = 'top-right';
+  $.jGrowl.defaults.themeState = '';
+  Shadowbox.setup('a.sb-enable', {modal:true});
+});
+var mobiles=['ipad','iphone','ipod','android'];
+var device=navigator.platform.toLowerCase();
+for (var i=0,mobile; mobile=mobiles[i]; i++) {
+  if (device.indexOf(mobile)>=0) {$('#footer').css('position','static'); break;}
+}
+$.ajaxPrefilter(function(s, orig, xhr){
+  if (s.type.toLowerCase() == "post" && !s.crossDomain) {
+    s.data = s.data || "";
+    s.data += s.data?"&":"";
+    s.data += "csrf_token=18FA89EE4D74E62D";
+  }
+});
+
+// add any pre-existing reboot notices  
+$(function() {
+});
+</script>
+</head>
+<body>
+ <div id="template">
+  <div class="upgrade_notice" style="display:none"></div>
+  <div id="header" class="">
+   <div class="logo">
+   <a href="https://unraid.net" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 222.36 39.04"><defs><linearGradient id="header-logo" x1="47.53" y1="79.1" x2="170.71" y2="-44.08" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e32929"/><stop offset="1" stop-color="#ff8d30"/></linearGradient></defs><title>unraid.net</title><path d="M146.7,29.47H135l-3,9h-6.49L138.93,0h8l13.41,38.49h-7.09L142.62,6.93l-5.83,16.88h8ZM29.69,0V25.4c0,8.91-5.77,13.64-14.9,13.64S0,34.31,0,25.4V0H6.54V25.4c0,5.17,3.19,7.92,8.25,7.92s8.36-2.75,8.36-7.92V0ZM50.86,12v26.5H44.31V0h6.11l17,26.5V0H74V38.49H67.9ZM171.29,0h6.54V38.49h-6.54Zm51.07,24.69c0,9-5.88,13.8-15.17,13.8H192.67V0H207.3c9.18,0,15.06,4.78,15.06,13.8ZM215.82,13.8c0-5.28-3.3-8.14-8.52-8.14h-8.08V32.77h8c5.33,0,8.63-2.8,8.63-8.08ZM108.31,23.92c4.34-1.6,6.93-5.28,6.93-11.55C115.24,3.68,110.18,0,102.48,0H88.84V38.49h6.55V5.66h6.87c3.8,0,6.21,1.82,6.21,6.71s-2.41,6.76-6.21,6.76H98.88l9.21,19.36h7.53Z" fill="url(#header-logo)"/></svg>
+</a>
+   Version: 6.9.2&nbsp;<a href='#' title='View Release Notes' onclick="openBox('/plugins/dynamix.plugin.manager/include/ShowChanges.php?tmp=1&file=/var/tmp/unRAIDServer.txt','Release Notes',600,900);return false"><span class='fa fa-info-circle fa-fw'></span></a>   </div>
+   <div class="block">
+    <span class="text-left">Server<br>Description<br>Registration<br>Uptime</span>
+    <span class="text-right">Tower &bullet; 192.168.1.200<br/>Media server<br/>
+    <a href="/Tools/Registration" title="Go to Registration page">Unraid OS <span id="licensetype">Plus</span><span id="licenseexpire"></span></a><br/>
+    <span class="uptime"></span></span>
+   </div>
+  </div>
+  <a href="#" class="back_to_top" title="Back To Top"><i class="fa fa-arrow-circle-up"></i></a>
+<div id='menu'><div id='nav-block'><div id='nav-left'><div id='nav-item'><a href='/Dashboard' onclick='initab()'>Dashboard</a></div><div id='nav-item'><a href='/Main' onclick='initab()'>Main</a></div><div id='nav-item'><a href='/Shares' onclick='initab()'>Shares</a></div><div id='nav-item'><a href='/Users' onclick='initab()'>Users</a></div><div id='nav-item'><a href='/Settings' onclick='initab()'>Settings</a></div><div id='nav-item'><a href='/Plugins' onclick='initab()'>Plugins</a></div><div id='nav-item'><a href='/Docker' onclick='initab()'>Docker</a></div><div id='nav-item' class='active'><a href='/VMs' onclick='initab()'>VMs</a></div><div id='nav-item'><a href='/Apps' onclick='initab()'>Apps</a></div><div id='nav-item'><a href='/Stats' onclick='initab()'>Stats</a></div><div id='nav-item'><a href='/Tools' onclick='initab()'>Tools</a></div></div><div id='nav-right'><script>
+// hide switch button when no other language packs
+$(function(){$('#nav-item.LanguageButton').hide();});
+
+function LanguageButton() {
+  var locale = '';
+  if (locale) {
+    switchLanguage('');
+    $.cookie('locale',locale,{path:'/'});
+  } else {
+    switchLanguage($.cookie('locale'));
+    $.removeCookie('locale');
+  }
+}
+
+function switchLanguage(lang) {
+  $.post('/webGui/include/LanguageReset.php',{lang:lang},function(){location.reload();});
+}
+</script><div id='nav-item' class='LanguageButton util'><a href='#' onclick='LanguageButton();return false;' title="Switch Language"><i class='icon-u-switch system'></i><span>Switch Language</span></a></div><script>if (typeof _ != 'function') function _(t) {return t;}</script><script>
+function systemTemp() {
+  $.post('/plugins/dynamix.system.temp/include/SystemTemp.php',{unit:'C',dot:'.'},function(data) {
+    showFooter(data,'temp');
+    if ($('#mb-temp').length) {
+      var temp = $('span#temp').text();
+      var unit = temp.indexOf('C')>0 ? 'C' : 'F';
+      temp = temp.split(unit);
+      if (temp[0]) $('#cpu-temp').html('Temperature: '+temp[0]+unit);
+      if (temp[1]) $('#mb-temp').html('Temperature: '+temp[1]+unit);
+    }
+    timers.systemTemp = setTimeout(systemTemp,10000);
+  });
+}
+setTimeout(systemTemp,100);
+</script>
+<div id='nav-user'></div><script>
+function LogoutButton() {
+  var id = window.setTimeout(null,0);
+  while (id--) window.clearTimeout(id);
+  window.location.href = '/logout';
+}
+</script>
+<div id='nav-item' class='LogoutButton util'><a href='#' onclick='LogoutButton();return false;' title="Logout"><i class='icon-u-logout system'></i><span>Logout</span></a></div><script>
+function TerminalButton() {
+  if (/MSIE|Edge/.test(navigator.userAgent)) {
+    swal({title:"Unsupported Feature",text:"Sorry, this feature is not supported by MSIE/Edge.<br>Please try a different browser",html:true,type:'error',confirmButtonText:"Ok"});
+    return;
+  }
+  var d = new Date();
+  var height = 600;
+  var width = 900;
+  var top = (screen.height-height)/2;
+  var left = (screen.width-width)/2;
+  window.open('/webterminal/', 'Web Terminal '+d.getTime(), 'resizeable=yes,scrollbars=yes,height='+height+',width='+width+',top='+top+',left='+left).focus();
+}
+</script>
+<div id='nav-item' class='TerminalButton util'><a href='/webterminal/' onclick='TerminalButton();return false;' title="Terminal"><i class='icon-u-terminal system'></i><span>Terminal</span></a></div><script>
+function FeedbackButton() {
+  openBox("/webGui/include/Feedback.php","Feedback",600,600,false);
+}
+</script><div id='nav-item' class='FeedbackButton util'><a href='#' onclick='FeedbackButton();return false;' title="Feedback"><i class='icon-u-chat system'></i><span>Feedback</span></a></div><script>
+function InfoButton() {
+  openBox("/webGui/include/SystemInformation.php?more=/Tools/SystemProfiler","System Information",600,600);
+}
+</script><div id='nav-item' class='InfoButton util'><a href='#' onclick='InfoButton();return false;' title="Info"><i class='icon-u-display system'></i><span>Info</span></a></div><script>
+function LogButton() {
+  openWindow("/webGui/scripts/tail_log&arg1=syslog&arg2=","System Log",600,900);
+}
+</script>
+<div id='nav-item' class='LogButton util'><a href='#' onclick='LogButton();return false;' title="Log"><i class='icon-u-log system'></i><span>Log</span></a></div><script>
+function HelpButton() {
+  if ($('#nav-item.HelpButton').toggleClass('active').hasClass('active')) {
+    $('.inline_help').show('slow');
+    $.cookie('help','help',{path:'/'});
+  } else {
+    $('.inline_help').hide('slow');
+    $.removeCookie('help',{path:'/'});
+  }
+}
+</script><div id='nav-item' class='HelpButton util'><a href='#' onclick='HelpButton();return false;' title="Help"><i class='icon-u-help system'></i><span>Help</span></a></div><script type="text/javascript">
+	ud_url = location.pathname.split('/');
+	if (ud_url[1] == "Main" && ud_url.length > 2)
+	{
+		var InitTab = $.cookie('tab');
+		$.cookie('tab','tab1',{path:'/'});
+		$(window).unload(function() {
+			$.cookie('one',InitTab,{path:'/'});
+		});
+	}
+</script>
+<div id='nav-user'></div>
+
+<div id='nav-user'></div>
+
+<script>
+if ( typeof addRebootNotice !== "function" ) {
+// add any pre-existing reboot notices	
+	$(function() {
+	});
+	
+	function addRebootNotice(message="You must reboot for changes to take effect") {
+		addBannerWarning(message,true,true);
+		$.post("/plugins/community.applications/scripts/PluginAPI.php",{action:'addRebootNotice',message:message});
+	}
+}
+</script><div id='nav-user'></div><style>
+/* Additional CSS for when user supplies element */
+.ca_element_notice{padding-right:20px;width:100%;height:40px;line-height:40px;color:#e68a00;background:#feefb3;border-bottom:#e68a00 1px solid;text-align:center;font-size:1.4rem;z-index:900;display:none;}
+.ca_PluginUpdateDismiss{float:right;margin-right:20px;cursor:pointer;}
+.ca_pluginUpdateInfo{cursor:pointer;}
+.ca_PluginUpdateInstall{cursor:pointer;}
+a.bannerInfo {cursor:pointer;text-decoration:none;}
+.bannerInfo::before {content:"\f05a";font-family:fontAwesome;color:#e68a00;}
+</style>
+<script>
+
+function ca_hidePluginUpdate(plugin,version,element) {
+	$.cookie(plugin,version);
+	$(element).hide();
+}
+
+function ca_pluginUpdateInstall(plugin) {
+	openBox("/plugins/dynamix.plugin.manager/scripts/plugin&arg1=update&arg2="+plugin,"Installing Update",600,900,true,"window.location.reload()");
+}
+
+function ca_pluginUpdateShowInfo(cmd,title,height,width,load,func,id) {
+	// open shadowbox window (run in foreground)
+	var run = cmd.split('?')[0].substr(-4)=='.php' ? cmd : '/logging.htm?cmd='+cmd+'&csrf_token=18FA89EE4D74E62D';
+	var options = load ? (func ? {modal:true,onClose:function(){setTimeout(func+'('+'"'+(id||'')+'")',0);}} : {modal:false,onClose:function(){location=location;}}) : {modal:false};
+	Shadowbox.open({content:run, player:'iframe', title:title, height:Math.min(height,screen.availHeight), width:Math.min(width,screen.availWidth), options:options});
+}
+
+function caPluginUpdateCheck(plugin,options=[],callback) {
+	var pluginFilename = plugin.substr(0, plugin.lastIndexOf("."));
+	console.time("checkPlugin "+plugin);
+	console.log("checkPlugin  "+plugin);
+	$.post("/plugins/dynamix.plugin.manager/scripts/PluginAPI.php",{action:'checkPlugin',options:{plugin:plugin,name:options.name}},function(caAPIresult) {
+		console.groupCollapsed("Result checkPlugin "+plugin);
+		console.log(caAPIresult);
+		console.timeEnd("checkPlugin "+plugin);
+		console.groupEnd();
+		var result = JSON.parse(caAPIresult);
+
+		if ( options.debug == true ) result.updateAvailable = true;
+		if ( ! options.element && ! options.dontShow ) {
+			if ( result.updateAvailable ) {
+				var HTML = result.updateMessage+" <a class='ca_PluginUpdateInstall' onclick='ca_pluginUpdateInstall(&quot;"+plugin+"&quot;);'>"+result.linkMessage+"</a> <a class='bannerInfo fa fa-info-circle' onclick='ca_pluginUpdateShowInfo(&quot;/plugins/dynamix.plugin.manager/include/ShowChanges.php?file=%2Ftmp%2Fplugins%2F"+pluginFilename+".txt&quot;,&quot;Release Notes&quot;,600,900); return false;'></a>";
+				addBannerWarning(HTML,false,options.noDismiss);
+			}
+		} else {
+			if ( $.cookie(plugin) != result.version ) {
+				if ( result.updateAvailable ) {
+					var HTML = result.updateMessage+" <a class='ca_PluginUpdateInstall' onclick='ca_pluginUpdateInstall(&quot;"+plugin+"&quot;);'>"+result.linkMessage+"</a> <a class='bannerInfo fa fa-info-circle' onclick='ca_pluginUpdateShowInfo(&quot;/plugins/dynamix.plugin.manager/include/ShowChanges.php?file=%2Ftmp%2Fplugins%2F"+pluginFilename+".txt&quot;,&quot;Release Notes&quot;,600,900); return false;'></a>";
+					if ( ! options.noDismiss ) {
+						HTML = HTML.concat("<span class='ca_PluginUpdateDismiss'><i class='fa fa-close' onclick='ca_hidePluginUpdate(&quot;"+plugin+"&quot;,&quot;"+result.version+"&quot;,&quot;"+options.element+"&quot;);'></i>");
+					}
+					result.HTML = HTML;
+
+					if ( ! options.dontShow ) {
+						$(options.element).html(HTML);
+						$(options.element).addClass("ca_element_notice").show();
+					}
+				}
+			}
+		}
+		if ( typeof options === "function" ) {
+			callback = options;
+		}
+		if ( typeof callback === "function" ) {
+			callback(JSON.stringify(result));
+		}
+	});
+}
+
+</script>
+<div id='nav-user'></div></div></div></div><div class='tabs'><div class='tab'><input type='radio' id='tab1' name='tabs'><div class='content shift'><div id='title'><span class='left'><i class='fa fa-clipboard title'></i>Update VM</span></div><link type="text/css" rel="stylesheet" href="/plugins/dynamix.vm.manager/styles/dynamix.vm.manager.css?v=1538084292">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/jquery.filetree.css?v=1538184067">
+<link type="text/css" rel="stylesheet" href="/webGui/styles/jquery.switchbutton.css?v=1548293345">
+
+<style>
+body{-webkit-overflow-scrolling:touch}
+.fileTree{background:#212121;width:300px;max-height:150px;overflow-y:scroll;overflow-x:hidden;position:absolute;z-index:100;display:none}
+#vmform table{margin-top:0}
+#vmform div#title + table{margin-top:0}
+#vmform table tr{vertical-align:top;line-height:40px}
+#vmform table tr td:nth-child(odd){width:220px;text-align:right;padding-right:10px}
+#vmform table tr td:nth-child(even){width:100px}
+#vmform table tr td:last-child{width:inherit}
+#vmform .multiple{position:relative}
+#vmform .sectionbutton{position:absolute;left:2px;cursor:pointer;opacity:0.4;font-size:1.4rem;line-height:17px;z-index:10;transition-property:opacity,left;transition-duration:0.1s;transition-timing-function:linear}
+#vmform .sectionbutton.remove{top:0;opacity:0.3}
+#vmform .sectionbutton.add{bottom:0}
+#vmform .sectionbutton:hover{opacity:1.0}
+#vmform .sectiontab{position:absolute;top:2px;bottom:2px;left:0;width:6px;border-radius:3px;background-color:#DDDDDD;transition-property:background,width;transition-duration:0.1s;transition-timing-function:linear}
+#vmform .multiple:hover .sectionbutton{opacity:0.7;left:4px}
+#vmform .multiple:hover .sectionbutton.remove{opacity:0.6}
+#vmform .multiple:hover .sectiontab{background-color:#CCCCCC;width:8px}
+#vmform table.multiple{margin:10px 0;background:#212121;background-size:800px 100%;background-position:-800px;background-repeat:no-repeat;background-clip:content-box;transition:background 0.3s linear}
+#vmform table.multiple:hover{background-position:0 0;}
+#vmform table.multiple td{padding:5px 0}
+span.advancedview_panel{display:none;line-height:16px;margin-top:1px}
+.basic{display:none}
+.advanced{/*Empty placeholder*/}
+.switch-button-label.off{color:inherit}
+#template_img{cursor:pointer}
+#template_img:hover{opacity:0.5}
+#template_img:hover i{opacity:1.0}
+.template_img_chooser_inner{display:inline-block;width:80px;margin-bottom:15px;margin-right:10px;text-align:center;}
+.template_img_chooser_inner img{width:48px;height:48px}
+.template_img_chooser_inner p{text-align:center;line-height:8px;}
+#template_img_chooser{width:560px;height:300px;overflow-y:scroll;position:relative}
+#template_img_chooser div:hover{background-color:#eee;cursor:pointer;}
+#template_img_chooser_outer{position:absolute;display:none;border-radius:5px;border:1px solid #2b2b2b;background:#212121;z-index:10}
+#form_content{display:none}
+#vmform .four{overflow:hidden}
+#vmform .four label{float:left;display:table-cell;width:15%;}
+#vmform .four label:nth-child(4n+4){}
+#vmform .four label.cpu1{width:28%;height:16px;line-height:16px}
+#vmform .four label.cpu2{width:3%;height:16px;line-height:16px}
+#vmform .mac_generate{cursor:pointer;margin-left:-5px;color:#08C;font-size:1.3rem;transform:translate(0px, 2px)}
+#vmform .disk{display:none}
+#vmform .disk_preview{display:inline-block;color:#BBB;transform:translate(0px, 1px)}
+span#dropbox{border:1px solid #2b2b2b;background:#212121;padding:28px 12px;line-height:72px;margin-right:16px;}
+</style>
+
+<span class="status advancedview_panel" style="margin-top:-58px"><input type="checkbox" class="advancedview"></span>
+<div class="domain">
+	<form id="vmform" method="POST">
+	<input type="hidden" name="domain[type]" value="kvm" />
+	<input type="hidden" name="template[name]" value="Ubuntu" />
+
+	<table>
+		<tr>
+			<td>Icon:</td>
+			<td>
+				<input type="hidden" name="template[icon]" id="template_icon" value="ubuntu.png" />
+				<img id="template_img" src="/plugins/dynamix.vm.manager/templates/images/ubuntu.png" width="48" height="48" title="Change Icon..."/>
+				<div id="template_img_chooser_outer">
+					<div id="template_img_chooser">
+					<div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/arch.png" basename="arch.png"><p>arch</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/centos.png" basename="centos.png"><p>centos</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/chromeos.png" basename="chromeos.png"><p>chromeos</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/coreos.png" basename="coreos.png"><p>coreos</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/debian.png" basename="debian.png"><p>debian</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/default.png" basename="default.png"><p>default</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/fedora.png" basename="fedora.png"><p>fedora</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/freebsd.png" basename="freebsd.png"><p>freebsd</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/libreelec.png" basename="libreelec.png"><p>libreelec</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/linux.png" basename="linux.png"><p>linux</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/openelec.png" basename="openelec.png"><p>openelec</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/opensuse.png" basename="opensuse.png"><p>opensuse</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/redhat.png" basename="redhat.png"><p>redhat</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/scientific.png" basename="scientific.png"><p>scientific</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/slackware.png" basename="slackware.png"><p>slackware</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/steamos.png" basename="steamos.png"><p>steamos</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/ubuntu.png" basename="ubuntu.png"><p>ubuntu</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/unraid.png" basename="unraid.png"><p>unraid</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/vyos.png" basename="vyos.png"><p>vyos</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/windows7.png" basename="windows7.png"><p>windows7</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/windows.png" basename="windows.png"><p>windows</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/windowsvista.png" basename="windowsvista.png"><p>windowsvista</p></div><div class="template_img_chooser_inner"><img src="/plugins/dynamix.vm.manager/templates/images/windowsxp.png" basename="windowsxp.png"><p>windowsxp</p></div>					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	<table>
+		<tr style="line-height: 16px; vertical-align: middle;">
+			<td>Autostart:</td>
+			<td><div style="margin-left:-10px;padding-top:6px"><input type="checkbox" id="domain_autostart" name="domain[autostart]" style="display:none" class="autostart" value="1" ></div></td>
+		</tr>
+	</table>
+	<blockquote class="inline_help">
+		<p>If you want this VM to start with the array, set this to yes.</p>
+	</blockquote>
+
+	<div id="form_content">
+<link rel="stylesheet" href="/plugins/dynamix.vm.manager/scripts/codemirror/lib/codemirror.css?v=1535741905">
+<link rel="stylesheet" href="/plugins/dynamix.vm.manager/scripts/codemirror/addon/hint/show-hint.css?v=1535741905">
+<style type="text/css">
+	.CodeMirror { border: 1px solid #eee; cursor: text; margin-top: 15px; margin-bottom: 10px; }
+	.CodeMirror pre.CodeMirror-placeholder { color: #999; }
+</style>
+
+<div class="formview">
+<input type="hidden" name="template[os]" id="template_os" value="ubuntu">
+<input type="hidden" name="domain[persistent]" value="1">
+<input type="hidden" name="domain[uuid]" value="1d608caf-a589-395f-121a-c6c70f9abac6">
+<input type="hidden" name="domain[clock]" id="domain_clock" value="utc">
+<input type="hidden" name="domain[arch]" value="x86_64">
+<input type="hidden" name="domain[oldname]" id="domain_oldname" value="Lubuntu">
+
+	<table>
+		<tr>
+			<td>Name:</td>
+			<td><input type="text" name="domain[name]" id="domain_name" class="textTemplate" title="Name of virtual machine" placeholder="e.g. My Workstation" value="Lubuntu" required /></td>
+		</tr>
+	</table>
+	<blockquote class="inline_help">
+		<p>Give the VM a name (e.g. Work, Gaming, Media Player, Firewall, Bitcoin Miner)</p>
+	</blockquote>
+
+	<table>
+		<tr class="advanced">
+			<td>Description:</td>
+			<td><input type="text" name="domain[desc]" title="description of virtual machine" placeholder="description of virtual machine (optional)" value="" /></td>
+		</tr>
+	</table>
+	<div class="advanced">
+		<blockquote class="inline_help">
+			<p>Give the VM a brief description (optional field).</p>
+		</blockquote>
+	</div>
+
+	<table>
+		<tr class="advanced">
+			<td>CPU Mode:</td>
+			<td>
+				<select name="domain[cpumode]" title="define type of cpu presented to this vm">
+				<option value='host-passthrough' selected>Host Passthrough (Intel&#174; Core&#8482; i5-9600K)</option><option value='emulated'>Emulated (QEMU64)</option>				</select>
+			</td>
+		</tr>
+	</table>
+	<div class="advanced">
+		<blockquote class="inline_help">
+			<p>There are two CPU modes available to choose:</p>
+			<p>
+				<b>Host Passthrough</b><br>
+				With this mode, the CPU visible to the guest should be exactly the same as the host CPU even in the aspects that libvirt does not understand.  For the best possible performance, use this setting.
+			</p>
+			<p>
+				<b>Emulated</b><br>
+				If you are having difficulties with Host Passthrough mode, you can try the emulated mode which doesn't expose the guest to host-based CPU features.  This may impact the performance of your VM.
+			</p>
+		</blockquote>
+	</div>
+
+	<table>
+		<tr>
+			<td>Logical CPUs:</td>
+			<td>
+				<div class="textarea four">
+				<label for='vcpu0' class='checkbox'>cpu 0<input type='checkbox' name='domain[vcpu][]' class='domain_vcpu' id='vcpu0' value='0' checked><span class='checkmark'></span></label><label for='vcpu1' class='checkbox'>cpu 1<input type='checkbox' name='domain[vcpu][]' class='domain_vcpu' id='vcpu1' value='1' checked><span class='checkmark'></span></label><label for='vcpu2' class='checkbox'>cpu 2<input type='checkbox' name='domain[vcpu][]' class='domain_vcpu' id='vcpu2' value='2' ><span class='checkmark'></span></label><label for='vcpu3' class='checkbox'>cpu 3<input type='checkbox' name='domain[vcpu][]' class='domain_vcpu' id='vcpu3' value='3' ><span class='checkmark'></span></label><label for='vcpu4' class='checkbox'>cpu 4<input type='checkbox' name='domain[vcpu][]' class='domain_vcpu' id='vcpu4' value='4' ><span class='checkmark'></span></label><label for='vcpu5' class='checkbox'>cpu 5<input type='checkbox' name='domain[vcpu][]' class='domain_vcpu' id='vcpu5' value='5' ><span class='checkmark'></span></label>				</div>
+			</td>
+		</tr>
+	</table>
+	<blockquote class="inline_help">
+		<p>The number of logical CPUs in your system is determined by multiplying the number of CPU cores on your processor(s) by the number of threads.</p>
+		<p>Select which logical CPUs you wish to allow your VM to use. (minimum 1).</p>
+	</blockquote>
+
+	<table>
+		<tr>
+			<td><span class="advanced">Initial </span>Memory:</td>
+			<td>
+				<select name="domain[mem]" id="domain_mem" class="narrow" title="define the amount memory">
+				<option value='131072'>128 MB</option><option value='262144'>256 MB</option><option value='524288'>512 MB</option><option value='1048576'>1024 MB</option><option value='1572864'>1536 MB</option><option value='2097152' selected>2048 MB</option><option value='2621440'>2560 MB</option><option value='3145728'>3072 MB</option><option value='3670016'>3584 MB</option><option value='4194304'>4096 MB</option><option value='4718592'>4608 MB</option><option value='5242880'>5120 MB</option><option value='5767168'>5632 MB</option><option value='6291456'>6144 MB</option><option value='6815744'>6656 MB</option><option value='7340032'>7168 MB</option><option value='7864320'>7680 MB</option><option value='8388608'>8192 MB</option><option value='8912896'>8704 MB</option><option value='9437184'>9216 MB</option><option value='9961472'>9728 MB</option><option value='10485760'>10240 MB</option><option value='11010048'>10752 MB</option><option value='11534336'>11264 MB</option><option value='12058624'>11776 MB</option><option value='12582912'>12288 MB</option><option value='13107200'>12800 MB</option><option value='13631488'>13312 MB</option><option value='14155776'>13824 MB</option><option value='14680064'>14336 MB</option><option value='15204352'>14848 MB</option><option value='15728640'>15360 MB</option>				</select>
+			</td>
+
+			<td class="advanced">Max Memory:</td>
+			<td class="advanced">
+				<select name="domain[maxmem]" id="domain_maxmem" class="narrow" title="define the maximum amount of memory">
+				<option value='131072'>128 MB</option><option value='262144'>256 MB</option><option value='524288'>512 MB</option><option value='1048576'>1024 MB</option><option value='1572864'>1536 MB</option><option value='2097152'>2048 MB</option><option value='2621440'>2560 MB</option><option value='3145728'>3072 MB</option><option value='3670016'>3584 MB</option><option value='4194304' selected>4096 MB</option><option value='4718592'>4608 MB</option><option value='5242880'>5120 MB</option><option value='5767168'>5632 MB</option><option value='6291456'>6144 MB</option><option value='6815744'>6656 MB</option><option value='7340032'>7168 MB</option><option value='7864320'>7680 MB</option><option value='8388608'>8192 MB</option><option value='8912896'>8704 MB</option><option value='9437184'>9216 MB</option><option value='9961472'>9728 MB</option><option value='10485760'>10240 MB</option><option value='11010048'>10752 MB</option><option value='11534336'>11264 MB</option><option value='12058624'>11776 MB</option><option value='12582912'>12288 MB</option><option value='13107200'>12800 MB</option><option value='13631488'>13312 MB</option><option value='14155776'>13824 MB</option><option value='14680064'>14336 MB</option><option value='15204352'>14848 MB</option><option value='15728640'>15360 MB</option>				</select>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+	<div class="basic">
+		<blockquote class="inline_help">
+			<p>Select how much memory to allocate to the VM at boot.</p>
+		</blockquote>
+	</div>
+	<div class="advanced">
+		<blockquote class="inline_help">
+			<p>For VMs where no PCI devices are being passed through (GPUs, sound, etc.), you can set different values to initial and max memory to allow for memory ballooning.  If you are passing through a PCI device, only the initial memory value is used and the max memory value is ignored.  For more information on KVM memory ballooning, see <a href="http://www.linux-kvm.org/page/FAQ#Is_dynamic_memory_management_for_guests_supported.3F" target="_new">here</a>.</p>
+		</blockquote>
+	</div>
+
+	<table>
+		<tr class="advanced">
+			<td>Machine:</td>
+			<td>
+				<select name="domain[machine]" class="narrow" id="domain_machine" title="Select the machine model.  i440fx will work for most.  Q35 for a newer machine model with PCIE">
+				<option value='pc-i440fx-5.1'>i440fx-5.1</option><option value='pc-i440fx-5.0'>i440fx-5.0</option><option value='pc-i440fx-4.2'>i440fx-4.2</option><option value='pc-i440fx-4.1'>i440fx-4.1</option><option value='pc-i440fx-4.0'>i440fx-4.0</option><option value='pc-i440fx-3.1'>i440fx-3.1</option><option value='pc-i440fx-3.0'>i440fx-3.0</option><option value='pc-i440fx-2.12'>i440fx-2.12</option><option value='pc-i440fx-2.11'>i440fx-2.11</option><option value='pc-i440fx-2.10'>i440fx-2.10</option><option value='pc-i440fx-2.9'>i440fx-2.9</option><option value='pc-i440fx-2.8'>i440fx-2.8</option><option value='pc-i440fx-2.7'>i440fx-2.7</option><option value='pc-i440fx-2.6'>i440fx-2.6</option><option value='pc-i440fx-2.5'>i440fx-2.5</option><option value='pc-i440fx-2.4'>i440fx-2.4</option><option value='pc-i440fx-2.3'>i440fx-2.3</option><option value='pc-i440fx-2.2'>i440fx-2.2</option><option value='pc-i440fx-2.1'>i440fx-2.1</option><option value='pc-i440fx-2.0'>i440fx-2.0</option><option value='pc-i440fx-1.7'>i440fx-1.7</option><option value='pc-i440fx-1.6'>i440fx-1.6</option><option value='pc-i440fx-1.5'>i440fx-1.5</option><option value='pc-i440fx-1.4'>i440fx-1.4</option><option value='pc-q35-5.1'>Q35-5.1</option><option value='pc-q35-5.0'>Q35-5.0</option><option value='pc-q35-4.2' selected>Q35-4.2</option><option value='pc-q35-4.1'>Q35-4.1</option><option value='pc-q35-4.0.1'>Q35-4.0.1</option><option value='pc-q35-4.0'>Q35-4.0</option><option value='pc-q35-3.1'>Q35-3.1</option><option value='pc-q35-3.0'>Q35-3.0</option><option value='pc-q35-2.12'>Q35-2.12</option><option value='pc-q35-2.11'>Q35-2.11</option><option value='pc-q35-2.10'>Q35-2.10</option><option value='pc-q35-2.9'>Q35-2.9</option><option value='pc-q35-2.8'>Q35-2.8</option><option value='pc-q35-2.7'>Q35-2.7</option><option value='pc-q35-2.6'>Q35-2.6</option><option value='pc-q35-2.5'>Q35-2.5</option><option value='pc-q35-2.4'>Q35-2.4</option>				</select>
+			</td>
+		</tr>
+	</table>
+	<div class="advanced">
+		<blockquote class="inline_help">
+			<p>The machine type option primarily affects the success some users may have with various hardware and GPU pass through.  For more information on the various QEMU machine types, see these links:</p>
+			<a href="http://wiki.qemu.org/Documentation/Platforms/PC" target="_blank">http://wiki.qemu.org/Documentation/Platforms/PC</a><br>
+			<a href="http://wiki.qemu.org/Features/Q35" target="_blank">http://wiki.qemu.org/Features/Q35</a><br>
+			<p>As a rule of thumb, try to get your configuration working with i440fx first and if that fails, try adjusting to Q35 to see if that changes anything.</p>
+		</blockquote>
+	</div>
+
+	<table>
+		<tr class="advanced">
+			<td>BIOS:</td>
+			<td>
+				<select name="domain[ovmf]" id="domain_ovmf" class="narrow" title="Select the BIOS.  SeaBIOS will work for most.  OVMF requires a UEFI-compatable OS (e.g. Windows 8/2012, newer Linux distros) and if using graphics device passthrough it too needs UEFI" disabled="disabled">
+				<option value='0'>SeaBIOS</option><option value='1' selected>OVMF</option>				</select>
+									<input type="hidden" name="domain[ovmf]" value="1">
+							</td>
+		</tr>
+	</table>
+	<div class="advanced">
+		<blockquote class="inline_help">
+			<p>
+				<b>SeaBIOS</b><br>
+				is the default virtual BIOS used to create virtual machines and is compatible with all guest operating systems (Windows, Linux, etc.).
+			</p>
+			<p>
+				<b>OVMF</b><br>
+				(Open Virtual Machine Firmware) adds support for booting VMs using UEFI, but virtual machine guests must also support UEFI.  Assigning graphics devices to a OVMF-based virtual machine requires that the graphics device also support UEFI.
+			</p>
+			<p>
+				Once a VM is created this setting cannot be adjusted.
+			</p>
+		</blockquote>
+	</div>
+
+	<table class="domain_os windows">
+		<tr class="advanced">
+			<td>Hyper-V:</td>
+			<td>
+				<select name="domain[hyperv]" id="hyperv" class="narrow" title="Hyperv tweaks for Windows">
+				<option value='0' selected>No</option><option value='1'>Yes</option>				</select>
+			</td>
+		</tr>
+	</table>
+	<div class="domain_os windows">
+		<div class="advanced">
+			<blockquote class="inline_help">
+				<p>Exposes the guest to hyper-v extensions for Microsoft operating systems.</p>
+			</blockquote>
+		</div>
+	</div>
+
+	<table>
+		<tr class="advanced">
+			<td>USB Controller:</td>
+			<td>
+				<select name="domain[usbmode]" id="usbmode" class="narrow" title="Select the USB Controller to emulate.  Some OSes won&apos;t support USB3 (e.g. Windows 7/XP)">
+				<option value='usb2' selected>2.0 (EHCI)</option><option value='usb3'>3.0 (nec XHCI)</option><option value='usb3-qemu'>3.0 (qemu XHCI)</option>				</select>
+			</td>
+		</tr>
+	</table>
+	<div class="advanced">
+		<blockquote class="inline_help">
+			<p>
+				<b>USB Controller</b><br>
+				Select the USB Controller to emulate.  Some OSes won't support USB3 (e.g. Windows 7).  Qemu XHCI is the same code base as Nec XHCI but without several hacks applied over the years.  Recommended to try qemu XHCI before resorting to nec XHCI.
+			</p>
+		</blockquote>
+	</div>
+
+	<table>
+		<tr>
+			<td>OS Install ISO:</td>
+			<td>
+				<input type="text" data-pickcloseonfile="true" data-pickfilter="iso" data-pickmatch="^[^.].*" data-pickroot="/mnt/user/isos/" name="media[cdrom]" class="cdrom" value="/mnt/user/isos/lubuntu-20.10-desktop-amd64.iso" placeholder="Click and Select cdrom image to install operating system">
+			</td>
+		</tr>
+		<tr class="advanced">
+			<td>OS Install CDRom Bus:</td>
+			<td>
+				<select name="media[cdrombus]" class="cdrom_bus narrow">
+				<option value='scsi'>SCSI</option><option value='sata' selected>SATA</option><option value='ide'>IDE</option><option value='usb'>USB</option>				</select>
+			</td>
+		</tr>
+	</table>
+	<blockquote class="inline_help">
+		<p>Select the virtual CD-ROM (ISO) that contains the installation media for your operating system.  Clicking this field displays a list of ISOs found in the directory specified on the Settings page.</p>
+		<p class="advanced">
+			<b>CDRom Bus</b><br>
+			Specify what interface this virtual cdrom uses to connect inside the VM.
+		</p>
+	</blockquote>
+
+	<table class="domain_os windows">
+		<tr class="advanced">
+			<td>VirtIO Drivers ISO:</td>
+			<td>
+				<input type="text" data-pickcloseonfile="true" data-pickfilter="iso" data-pickmatch="^[^.].*" data-pickroot="/mnt/user/isos/" name="media[drivers]" class="cdrom" value="" placeholder="Download, Click and Select virtio drivers image">
+			</td>
+		</tr>
+		<tr class="advanced">
+			<td>VirtIO Drivers CDRom Bus:</td>
+			<td>
+				<select name="media[driversbus]" class="cdrom_bus narrow">
+				<option value='scsi'>SCSI</option><option value='sata' selected>SATA</option><option value='ide'>IDE</option><option value='usb'>USB</option>				</select>
+			</td>
+		</tr>
+	</table>
+	<div class="domain_os windows">
+		<div class="advanced">
+			<blockquote class="inline_help">
+				<p>Specify the virtual CD-ROM (ISO) that contains the VirtIO Windows drivers as provided by the Fedora Project.  Download the latest ISO from here: <a href="https://docs.fedoraproject.org/en-US/quick-docs/creating-windows-virtual-machines-using-virtio-drivers/index.html#virtio-win-direct-downloads" target="_blank">https://docs.fedoraproject.org/en-US/quick-docs/creating-windows-virtual-machines-using-virtio-drivers/index.html#virtio-win-direct-downloads</a></p>
+				<p>When installing Windows, you will reach a step where no disk devices will be found.  There is an option to browse for drivers on that screen.  Click browse and locate the additional CD-ROM in the menu.  Inside there will be various folders for the different versions of Windows.  Open the folder for the version of Windows you are installing and then select the AMD64 subfolder inside (even if you are on an Intel system, select AMD64).  Three drivers will be found.  Select them all, click next, and the vDisks you have assigned will appear.</p>
+				<p>
+					<b>CDRom Bus</b><br>
+					Specify what interface this virtual cdrom uses to connect inside the VM.
+				</p>
+			</blockquote>
+		</div>
+	</div>
+
+			<table data-category="vDisk" data-multiple="true" data-minimum="1" data-maximum="24" data-index="0" data-prefix="Primary">
+			<tr>
+				<td>vDisk Location:</td>
+				<td>
+					<select name="disk[0][select]" class="disk_select narrow">
+					<option value="">None</option><option value='auto' selected>Auto</option><option value='manual'>Manual</option>					</select><input type="text" data-pickcloseonfile="true" data-pickfolders="true" data-pickfilter="img,qcow,qcow2" data-pickmatch="^[^.].*" data-pickroot="/mnt/" name="disk[0][new]" class="disk" id="disk_0" value="/mnt/disks/vms/Lubuntu/vdisk1.img" placeholder="Separate sub-folder and image will be created based on Name"><div class="disk_preview"></div>
+				</td>
+			</tr>
+
+			<tr class="disk_file_options">
+				<td>vDisk Size:</td>
+				<td>
+					<input type="text" name="disk[0][size]" value="" class="narrow" placeholder="e.g. 10M, 1G, 10G...">
+				</td>
+			</tr>
+
+			<tr class="advanced disk_file_options">
+				<td>vDisk Type:</td>
+				<td>
+					<select name="disk[0][driver]" class="narrow" title="type of storage image">
+					<option value='raw' selected>raw</option><option value='qcow2'>qcow2</option>					</select>
+				</td>
+			</tr>
+
+			<tr class="advanced disk_bus_options">
+				<td>vDisk Bus:</td>
+				<td>
+					<select name="disk[0][bus]" class="disk_bus narrow">
+					<option value='virtio' selected>VirtIO</option><option value='scsi'>SCSI</option><option value='sata'>SATA</option><option value='ide'>IDE</option><option value='usb'>USB</option>					</select>
+				</td>
+			</tr>
+		</table>
+				<blockquote class="inline_help">
+			<p>
+				<b>vDisk Location</b><br>
+				Specify a path to a user share in which you wish to store the VM or specify an existing vDisk.  The primary vDisk will store the operating system for your VM.
+			</p>
+
+			<p>
+				<b>NOTE</b>: Unraid will automatically "dereference" vdisk paths when starting a VM.
+				That is, if a vdisk path is specified as being on a user share, we use the SYSTEM.LOCATION extended attribute to find out what physical disk the image exists on.
+				We then pass this path when starting a VM via qemu.  This ensures that VM I/O bypasses shfs (FUSE user share file system) for better performance.
+				It also means that a vdisk image file can be moved from one physical device to another without changing the VM XML file.
+			</p>
+
+			<p>
+				Example: /mnt/user/domains/Windows/vdisk1.img will be dereferenced to /mnt/cache/domains/Windows/vdisk1.img (for vdisk1.img physically located in the "cache" volume).
+			</p>
+
+			<p>
+				<b>vDisk Size</b><br>
+				Specify a number followed by a letter.  M for megabytes, G for gigabytes.
+			</p>
+
+			<p class="advanced">
+				<b>vDisk Type</b><br>
+				Select RAW for best performance.  QCOW2 implementation is still in development.
+			</p>
+
+			<p class="advanced">
+				<b>vDisk Bus</b><br>
+				Select virtio for best performance.
+			</p>
+
+			<p>Additional devices can be added/removed by clicking the symbols to the left.</p>
+		</blockquote>
+				<script type="text/html" id="tmplvDisk">
+		<table>
+			<tr>
+				<td>vDisk Location:</td>
+				<td>
+					<select name="disk[{{INDEX}}][select]" class="disk_select narrow">
+					<option value='auto' selected>Auto</option><option value='manual'>Manual</option>					</select><input type="text" data-pickcloseonfile="true" data-pickfolders="true" data-pickfilter="img,qcow,qcow2" data-pickmatch="^[^.].*" data-pickroot="/mnt/" name="disk[{{INDEX}}][new]" class="disk" id="disk_{{INDEX}}" value="" placeholder="Separate sub-folder and image will be created based on Name"><div class="disk_preview"></div>
+				</td>
+			</tr>
+
+			<tr class="disk_file_options">
+				<td>vDisk Size:</td>
+				<td>
+					<input type="text" name="disk[{{INDEX}}][size]" value="" class="narrow" placeholder="e.g. 10M, 1G, 10G...">
+				</td>
+			</tr>
+
+			<tr class="advanced disk_file_options">
+				<td>vDisk Type:</td>
+				<td>
+					<select name="disk[{{INDEX}}][driver]" class="narrow" title="type of storage image">
+					<option value='raw'>raw</option><option value='qcow2'>qcow2</option>					</select>
+				</td>
+			</tr>
+
+			<tr class="advanced disk_bus_options">
+				<td>vDisk Bus:</td>
+				<td>
+					<select name="disk[{{INDEX}}][bus]" class="disk_bus narrow">
+					<option value='virtio'>VirtIO</option><option value='scsi'>SCSI</option><option value='sata'>SATA</option><option value='ide'>IDE</option><option value='usb'>USB</option>					</select>
+				</td>
+			</tr>
+		</table>
+	</script>
+
+			<table class="domain_os other" data-category="Share" data-multiple="true" data-minimum="1" data-index="0" data-prefix="">
+			<tr class="advanced">
+				<td>Unraid Share:</td>
+				<td>
+					<input type="text" data-pickfolders="true" data-pickfilter="NO_FILES_FILTER" data-pickroot="/mnt/" value="" name="shares[0][source]" placeholder="e.g. /mnt/user/..." title="path of Unraid share" />
+				</td>
+			</tr>
+
+			<tr class="advanced">
+				<td>Unraid Mount tag:</td>
+				<td>
+					<input type="text" value="" name="shares[0][target]" placeholder="e.g. shares (name of mount tag inside vm)" title="mount tag inside vm" />
+				</td>
+			</tr>
+		</table>
+				<div class="domain_os other">
+			<div class="advanced">
+				<blockquote class="inline_help">
+					<p>
+						<b>Unraid Share</b><br>
+						Used to create a VirtFS mapping to a Linux-based guest.  Specify the path on the host here.
+					</p>
+
+					<p>
+						<b>Unraid Mount tag</b><br>
+						Specify the mount tag that you will use for mounting the VirtFS share inside the VM.  See this page for how to do this on a Linux-based guest: <a href="http://wiki.qemu.org/Documentation/9psetup" target="_blank">http://wiki.qemu.org/Documentation/9psetup</a>
+					</p>
+
+					<p>Additional devices can be added/removed by clicking the symbols to the left.</p>
+				</blockquote>
+			</div>
+		</div>
+				<script type="text/html" id="tmplShare">
+		<table class="domain_os other">
+			<tr class="advanced">
+				<td>Unraid Share:</td>
+				<td>
+					<input type="text" data-pickfolders="true" data-pickfilter="NO_FILES_FILTER" data-pickroot="/mnt/" value="" name="shares[{{INDEX}}][source]" placeholder="e.g. /mnt/user/..." title="path of Unraid share" />
+				</td>
+			</tr>
+
+			<tr class="advanced">
+				<td>Unraid Mount tag:</td>
+				<td>
+					<input type="text" value="" name="shares[{{INDEX}}][target]" placeholder="e.g. shares (name of mount tag inside vm)" title="mount tag inside vm" />
+				</td>
+			</tr>
+		</table>
+	</script>
+
+			<table data-category="Graphics_Card" data-multiple="true" data-minimum="1" data-maximum="2" data-index="0" data-prefix="">
+			<tr>
+				<td>Graphics Card:</td>
+				<td>
+					<select name="gpu[0][id]" class="gpu narrow">
+					<option value='vnc' selected>VNC</option><option value='00:02.0'>Intel UHD Graphics 630 (00:02.0)</option>					</select>
+				</td>
+			</tr>
+
+						<tr class="advanced vncmodel">
+				<td>VNC Video Driver:</td>
+				<td>
+					<select id="vncmodel" name="gpu[0][model]" class="narrow" title="video for VNC">
+					<option value='cirrus'>Cirrus</option><option value='qxl' selected>QXL (best)</option><option value='vmvga'>vmvga</option>					</select>
+				</td>
+			</tr>
+			<tr class="vncpassword">
+				<td>VNC Password:</td>
+				<td><input type="password" name="domain[password]" autocomplete='new-password' title="password for VNC" placeholder="password for VNC (optional)" /></td>
+			</tr>
+			<tr class="advanced vnckeymap">
+				<td>VNC Keyboard:</td>
+				<td>
+					<select name="gpu[0][keymap]" title="keyboard for VNC">
+					<option value='ar'>Arabic (ar)</option><option value='hr'>Croatian (hr)</option><option value='cz'>Czech (cz)</option><option value='da'>Danish (da)</option><option value='nl'>Dutch (nl)</option><option value='en-gb'>English-United Kingdom (en-gb)</option><option value='en-us' selected>English-United States (en-us)</option><option value='es'>Español (es)</option><option value='et'>Estonian (et)</option><option value='fo'>Faroese (fo)</option><option value='fi'>Finnish (fi)</option><option value='fr'>French (fr)</option><option value='bepo'>French-Bépo (bepo)</option><option value='fr-be'>French-Belgium (fr-be)</option><option value='fr-ca'>French-Canadian (fr-ca)</option><option value='fr-ch'>French-Switzerland (fr-ch)</option><option value='de-ch'>German-Switzerland (de-ch)</option><option value='de'>German (de)</option><option value='hu'>Hungarian (hu)</option><option value='is'>Icelandic (is)</option><option value='it'>Italian (it)</option><option value='ja'>Japanese (ja)</option><option value='lv'>Latvian (lv)</option><option value='lt'>Lithuanian (lt)</option><option value='mk'>Macedonian (mk)</option><option value='no'>Norwegian (no)</option><option value='pl'>Polish (pl)</option><option value='pt'>Portuguese (pt)</option><option value='pt-br'>Portuguese-Brazil (pt-br)</option><option value='ru'>Russian (ru)</option><option value='sl'>Slovene (sl)</option><option value='sv'>Swedish (sv)</option><option value='th'>Thailand (th)</option><option value='tr'>Turkish (tr)</option>					</select>
+				</td>
+			</tr>
+						<tr class="wasadvanced romfile">
+				<td>Graphics ROM BIOS:</td>
+				<td>
+					<input type="text" data-pickcloseonfile="true" data-pickfilter="rom,bin" data-pickmatch="^[^.].*" data-pickroot="/" value="" name="gpu[0][rom]" placeholder="Path to ROM BIOS file (optional)" title="Path to ROM BIOS file (optional)" />
+				</td>
+			</tr>
+		</table>
+				<blockquote class="inline_help">
+			<p>
+				<b>Graphics Card</b><br>
+				If you wish to assign a graphics card to the VM, select it from this list, otherwise leave it set to VNC.
+			</p>
+
+			<p class="advanced vncmodel">
+				<b>VNC Video Driver</b><br>
+				If you wish to assign a different video driver to use for a VNC connection, specify one here.
+			</p>
+
+			<p class="vncpassword">
+				<b>VNC Password</b><br>
+				If you wish to require a password to connect to the VM over a VNC connection, specify one here.
+			</p>
+
+			<p class="advanced vnckeymap">
+				<b>VNC Keyboard</b><br>
+				If you wish to assign a different keyboard layout to use for a VNC connection, specify one here.
+			</p>
+
+			<p class="wasadvanced romfile">
+				<b>Graphics ROM BIOS</b><br>
+				If you wish to use a custom ROM BIOS for a Graphics card, specify one here.
+			</p>
+
+			<p>Additional devices can be added/removed by clicking the symbols to the left.</p>
+		</blockquote>
+				<script type="text/html" id="tmplGraphics_Card">
+		<table>
+			<tr>
+				<td>Graphics Card:</td>
+				<td>
+					<select name="gpu[{{INDEX}}][id]" class="gpu narrow">
+					<option value='' selected>None</option><option value='00:02.0'>Intel UHD Graphics 630 (00:02.0)</option>					</select>
+				</td>
+			</tr>
+			<tr class="advanced romfile">
+				<td>Graphics ROM BIOS:</td>
+				<td>
+					<input type="text" data-pickcloseonfile="true" data-pickfilter="rom,bin" data-pickmatch="^[^.].*" data-pickroot="/" value="" name="gpu[{{INDEX}}][rom]" placeholder="Path to ROM BIOS file (optional)" title="Path to ROM BIOS file (optional)" />
+				</td>
+			</tr>
+		</table>
+	</script>
+
+			<table data-category="Sound_Card" data-multiple="true" data-minimum="1" data-maximum="1" data-index="0" data-prefix="">
+			<tr>
+				<td>Sound Card:</td>
+				<td>
+					<select name="audio[0][id]" class="audio narrow">
+					<option value='' selected>None</option><option value='00:1f.3'>Intel Cannon Lake PCH cAVS (00:1f.3)</option>					</select>
+				</td>
+			</tr>
+		</table>
+				<blockquote class="inline_help">
+			<p>Select a sound device to assign to your VM.  Most modern GPUs have a built-in audio device, but you can also select the on-board audio device(s) if present.</p>
+			<p>Additional devices can be added/removed by clicking the symbols to the left.</p>
+		</blockquote>
+				<script type="text/html" id="tmplSound_Card">
+		<table>
+			<tr>
+				<td>Sound Card:</td>
+				<td>
+					<select name="audio[{{INDEX}}][id]" class="audio narrow">
+					<option value='00:1f.3'>Intel Cannon Lake PCH cAVS (00:1f.3)</option>					</select>
+				</td>
+			</tr>
+		</table>
+	</script>
+
+			<table data-category="Network" data-multiple="true" data-minimum="1" data-index="0" data-prefix="">
+			<tr class="advanced">
+				<td>Network MAC:</td>
+				<td>
+					<input type="text" name="nic[0][mac]" class="narrow" value="52:54:00:5a:4b:3c" title="random mac, you can supply your own" /> <i class="fa fa-refresh mac_generate" title="re-generate random mac address"></i>
+				</td>
+			</tr>
+			<tr class="advanced">
+				<td>Network Bridge:</td>
+				<td>
+					<select name="nic[0][network]">
+					<option value='virbr0'>virbr0</option><option value='br0' selected>br0</option><option value='br0.20'>br0.20</option>					</select>
+				</td>
+			</tr>
+			<tr class="advanced">
+				<td>Network Model:</td>
+				<td>
+					<select name="nic[0][model]">
+					<option value='virtio-net'>virtio-net</option><option value='virtio' selected>virtio</option>					</select>
+				</td>
+			</tr>
+		</table>
+				<div class="advanced">
+			<blockquote class="inline_help">
+				<p>
+					<b>Network MAC</b><br>
+					By default, a random MAC address will be assigned here that conforms to the standards for virtual network interface controllers.  You can manually adjust this if desired.
+				</p>
+
+				<p>
+					<b>Network Bridge</b><br>
+					The default libvirt managed network bridge (virbr0) will be used, otherwise you may specify an alternative name for a private network bridge to the host.
+				</p>
+
+				<p>
+					<b>Network Model</b><br>
+					Default and recommended is 'virtio-net', which gives improved stability. To improve performance 'virtio' can be selected, but this may lead to stability issues.
+				</p>
+
+				<p>Additional devices can be added/removed by clicking the symbols to the left.</p>
+			</blockquote>
+		</div>
+				<script type="text/html" id="tmplNetwork">
+		<table>
+			<tr class="advanced">
+				<td>Network MAC:</td>
+				<td>
+					<input type="text" name="nic[{{INDEX}}][mac]" class="narrow" value="" title="random mac, you can supply your own" /> <i class="fa fa-refresh mac_generate" title="re-generate random mac address"></i>
+				</td>
+			</tr>
+			<tr class="advanced">
+				<td>Network Bridge:</td>
+				<td>
+					<select name="nic[{{INDEX}}][network]">
+					<option value='virbr0'>virbr0</option><option value='br0' selected>br0</option><option value='br0.20'>br0.20</option>					</select>
+				</td>
+			</tr>
+			<tr class="advanced">
+				<td>Network Model:</td>
+				<td>
+					<select name="nic[{{INDEX}}][model]">
+					<option value='virtio-net'>virtio-net</option><option value='virtio'>virtio</option>					</select>
+				</td>
+			</tr>
+		</table>
+	</script>
+
+	<table>
+		<tr>
+			<td>USB Devices:</td>
+			<td>
+				<div class="textarea" style="width: 540px">
+										<label for="usb0"><input type="checkbox" name="usb[]" id="usb0" value="1058:259d" /> Western Digital Technologies My Passport Ultra (WDBBKD) (1058:259d)</label><br/>
+										</div>
+			</td>
+		</tr>
+	</table>
+	<blockquote class="inline_help">
+		<p>If you wish to assign any USB devices to your guest, you can select them from this list.</p>
+	</blockquote>
+
+	<table>
+		<tr>
+			<td>Other PCI Devices:</td>
+			<td>
+				<div class="textarea" style="width: 540px">
+				<i>None available</i>				</div>
+			</td>
+		</tr>
+	</table>
+	<blockquote class="inline_help">
+		<p>If you wish to assign any other PCI devices to your guest, you can select them from this list.</p>
+	</blockquote>
+
+	<table>
+		<tr>
+			<td></td>
+			<td>
+							<input type="hidden" name="updatevm" value="1" />
+				<input type="button" value="Update" busyvalue="Updating..." readyvalue="Update" id="btnSubmit" />
+							<input type="button" value="Cancel" id="btnCancel" />
+			</td>
+		</tr>
+	</table>
+	</div>
+
+<div class="xmlview">
+	<textarea id="addcode" name="xmldesc" placeholder="Copy &amp; Paste Domain XML Configuration Here." autofocus>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;domain type='kvm'&gt;
+  &lt;name&gt;Lubuntu&lt;/name&gt;
+  &lt;uuid&gt;1d608caf-a589-395f-121a-c6c70f9abac6&lt;/uuid&gt;
+  &lt;metadata&gt;
+    &lt;vmtemplate xmlns=&quot;unraid&quot; name=&quot;Ubuntu&quot; icon=&quot;ubuntu.png&quot; os=&quot;ubuntu&quot;/&gt;
+  &lt;/metadata&gt;
+  &lt;memory unit='KiB'&gt;4194304&lt;/memory&gt;
+  &lt;currentMemory unit='KiB'&gt;2097152&lt;/currentMemory&gt;
+  &lt;memoryBacking&gt;
+    &lt;nosharepages/&gt;
+  &lt;/memoryBacking&gt;
+  &lt;vcpu placement='static'&gt;2&lt;/vcpu&gt;
+  &lt;cputune&gt;
+    &lt;vcpupin vcpu='0' cpuset='0'/&gt;
+    &lt;vcpupin vcpu='1' cpuset='1'/&gt;
+  &lt;/cputune&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64' machine='pc-q35-4.2'&gt;hvm&lt;/type&gt;
+    &lt;loader readonly='yes' type='pflash'&gt;/usr/share/qemu/ovmf-x64/OVMF_CODE-pure-efi.fd&lt;/loader&gt;
+    &lt;nvram&gt;/etc/libvirt/qemu/nvram/1d608caf-a589-395f-121a-c6c70f9abac6_VARS-pure-efi.fd&lt;/nvram&gt;
+  &lt;/os&gt;
+  &lt;features&gt;
+    &lt;acpi/&gt;
+    &lt;apic/&gt;
+  &lt;/features&gt;
+  &lt;cpu mode='host-passthrough' check='none' migratable='on'&gt;
+    &lt;topology sockets='1' dies='1' cores='2' threads='1'/&gt;
+    &lt;cache mode='passthrough'/&gt;
+  &lt;/cpu&gt;
+  &lt;clock offset='utc'&gt;
+    &lt;timer name='rtc' tickpolicy='catchup'/&gt;
+    &lt;timer name='pit' tickpolicy='delay'/&gt;
+    &lt;timer name='hpet' present='no'/&gt;
+  &lt;/clock&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/local/sbin/qemu&lt;/emulator&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='qemu' type='raw' cache='writeback'/&gt;
+      &lt;source file='/mnt/disks/vms/Lubuntu/vdisk1.img'/&gt;
+      &lt;target dev='hdc' bus='virtio'/&gt;
+      &lt;boot order='1'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' device='cdrom'&gt;
+      &lt;driver name='qemu' type='raw'/&gt;
+      &lt;source file='/mnt/user/isos/lubuntu-20.10-desktop-amd64.iso'/&gt;
+      &lt;target dev='hda' bus='sata'/&gt;
+      &lt;readonly/&gt;
+      &lt;boot order='2'/&gt;
+      &lt;address type='drive' controller='0' bus='0' target='0' unit='0'/&gt;
+    &lt;/disk&gt;
+    &lt;controller type='usb' index='0' model='ich9-ehci1'&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x7'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='usb' index='0' model='ich9-uhci1'&gt;
+      &lt;master startport='0'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0' multifunction='on'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='usb' index='0' model='ich9-uhci2'&gt;
+      &lt;master startport='2'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x1'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='usb' index='0' model='ich9-uhci3'&gt;
+      &lt;master startport='4'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x2'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='sata' index='0'&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='pci' index='0' model='pcie-root'/&gt;
+    &lt;controller type='pci' index='1' model='pcie-root-port'&gt;
+      &lt;model name='pcie-root-port'/&gt;
+      &lt;target chassis='1' port='0x10'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0' multifunction='on'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='pci' index='2' model='pcie-root-port'&gt;
+      &lt;model name='pcie-root-port'/&gt;
+      &lt;target chassis='2' port='0x11'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x1'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='pci' index='3' model='pcie-root-port'&gt;
+      &lt;model name='pcie-root-port'/&gt;
+      &lt;target chassis='3' port='0x12'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x2'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='pci' index='4' model='pcie-root-port'&gt;
+      &lt;model name='pcie-root-port'/&gt;
+      &lt;target chassis='4' port='0x13'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x3'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='pci' index='5' model='pcie-root-port'&gt;
+      &lt;model name='pcie-root-port'/&gt;
+      &lt;target chassis='5' port='0x14'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x4'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='virtio-serial' index='0'&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/&gt;
+    &lt;/controller&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;mac address='52:54:00:5a:4b:3c'/&gt;
+      &lt;source bridge='br0'/&gt;
+      &lt;model type='virtio'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/&gt;
+    &lt;/interface&gt;
+    &lt;serial type='pty'&gt;
+      &lt;target type='isa-serial' port='0'&gt;
+        &lt;model name='isa-serial'/&gt;
+      &lt;/target&gt;
+    &lt;/serial&gt;
+    &lt;console type='pty'&gt;
+      &lt;target type='serial' port='0'/&gt;
+    &lt;/console&gt;
+    &lt;channel type='unix'&gt;
+      &lt;target type='virtio' name='org.qemu.guest_agent.0'/&gt;
+      &lt;address type='virtio-serial' controller='0' bus='0' port='1'/&gt;
+    &lt;/channel&gt;
+    &lt;input type='tablet' bus='usb'&gt;
+      &lt;address type='usb' bus='0' port='1'/&gt;
+    &lt;/input&gt;
+    &lt;input type='mouse' bus='ps2'/&gt;
+    &lt;input type='keyboard' bus='ps2'/&gt;
+    &lt;graphics type='vnc' port='-1' autoport='yes' websocket='-1' listen='0.0.0.0' keymap='en-us'&gt;
+      &lt;listen type='address' address='0.0.0.0'/&gt;
+    &lt;/graphics&gt;
+    &lt;video&gt;
+      &lt;model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/&gt;
+    &lt;/video&gt;
+    &lt;memballoon model='virtio'&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/&gt;
+    &lt;/memballoon&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;
+</textarea>
+
+	<table>
+		<tr>
+			<td></td>
+			<td>
+												<input type="hidden" name="updatevm" value="1" />
+					<input type="button" value="Update" busyvalue="Updating..." readyvalue="Update" id="btnSubmit" />
+								<input type="button" value="Cancel" id="btnCancel" />
+						</td>
+		</tr>
+	</table>
+</div>
+
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/lib/codemirror.js?v=1551829338"></script>
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/addon/display/placeholder.js?v=1535741905"></script>
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/addon/fold/foldcode.js?v=1535741905"></script>
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/addon/hint/show-hint.js?v=1535741905"></script>
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/addon/hint/xml-hint.js?v=1535741905"></script>
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/addon/hint/libvirt-schema.js?v=1595785499"></script>
+<script src="/plugins/dynamix.vm.manager/scripts/codemirror/mode/xml/xml.js?v=1535741905"></script>
+<script type="text/javascript">
+$(function() {
+	function completeAfter(cm, pred) {
+		var cur = cm.getCursor();
+		if (!pred || pred()) setTimeout(function() {
+			if (!cm.state.completionActive)
+				cm.showHint({completeSingle: false});
+		}, 100);
+		return CodeMirror.Pass;
+	}
+
+	function completeIfAfterLt(cm) {
+		return completeAfter(cm, function() {
+			var cur = cm.getCursor();
+			return cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur) == "<";
+		});
+	}
+
+	function completeIfInTag(cm) {
+		return completeAfter(cm, function() {
+			var tok = cm.getTokenAt(cm.getCursor());
+			if (tok.type == "string" && (!/['"]/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1)) return false;
+			var inner = CodeMirror.innerMode(cm.getMode(), tok.state).state;
+			return inner.tagName;
+		});
+	}
+
+	var editor = CodeMirror.fromTextArea(document.getElementById("addcode"), {
+		mode: "xml",
+		lineNumbers: true,
+		foldGutter: true,
+		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+		extraKeys: {
+			"'<'": completeAfter,
+			"'/'": completeIfAfterLt,
+			"' '": completeIfInTag,
+			"'='": completeIfInTag,
+			"Ctrl-Space": "autocomplete"
+		},
+		hintOptions: {schemaInfo: getLibvirtSchema()}
+	});
+
+	function resetForm() {
+		$("#vmform .domain_vcpu").change(); // restore the cpu checkbox disabled states
+		$('#vmform #domain_ovmf').prop('disabled', true); // restore bios disabled state
+			}
+
+	$('.advancedview').change(function () {
+		if ($(this).is(':checked')) {
+			setTimeout(function() {
+				editor.refresh();
+			}, 100);
+		}
+	});
+
+	var regenerateDiskPreview = function (disk_index) {
+		var domaindir = '/mnt/disks/vms/' + $('#domain_oldname').val();
+		var tl_args = arguments.length;
+
+		$("#vmform .disk").closest('table').each(function (index) {
+			var $table = $(this);
+
+			if (tl_args && disk_index != $table.data('index')) {
+				return;
+			}
+
+			var disk_select = $table.find(".disk_select option:selected").val();
+			var $disk_file_sections = $table.find('.disk_file_options');
+			var $disk_bus_sections = $table.find('.disk_bus_options');
+			var $disk_input = $table.find('.disk');
+			var $disk_preview = $table.find('.disk_preview');
+
+			if (disk_select == 'manual') {
+
+				// Manual disk
+				$disk_preview.fadeOut('fast', function() {
+					$disk_input.fadeIn('fast');
+				});
+
+				$disk_bus_sections.filter('.wasadvanced').removeClass('wasadvanced').addClass('advanced');
+				slideDownRows($disk_bus_sections.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+
+				$.getJSON("/plugins/dynamix.vm.manager/include/VMajax.php?action=file-info&file=" + encodeURIComponent($disk_input.val()), function( info ) {
+					if (info.isfile || info.isblock) {
+						slideUpRows($disk_file_sections);
+						$disk_file_sections.filter('.advanced').removeClass('advanced').addClass('wasadvanced');
+
+						$disk_input.attr('name', $disk_input.attr('name').replace('new', 'image'));
+					} else {
+						$disk_file_sections.filter('.wasadvanced').removeClass('wasadvanced').addClass('advanced');
+						slideDownRows($disk_file_sections.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+
+						$disk_input.attr('name', $disk_input.attr('name').replace('image', 'new'));
+					}
+				});
+
+			} else if (disk_select !== '') {
+
+				// Auto disk
+				var auto_disk_path = domaindir + '/vdisk' + (index+1) + '.img';
+				$disk_preview.html(auto_disk_path);
+				$disk_input.fadeOut('fast', function() {
+					$disk_preview.fadeIn('fast');
+				});
+
+				$disk_bus_sections.filter('.wasadvanced').removeClass('wasadvanced').addClass('advanced');
+				slideDownRows($disk_bus_sections.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+
+				$.getJSON("/plugins/dynamix.vm.manager/include/VMajax.php?action=file-info&file=" + encodeURIComponent(auto_disk_path), function( info ) {
+					if (info.isfile || info.isblock) {
+						slideUpRows($disk_file_sections);
+						$disk_file_sections.filter('.advanced').removeClass('advanced').addClass('wasadvanced');
+
+						$disk_input.attr('name', $disk_input.attr('name').replace('new', 'image'));
+					} else {
+						$disk_file_sections.filter('.wasadvanced').removeClass('wasadvanced').addClass('advanced');
+						slideDownRows($disk_file_sections.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+
+						$disk_input.attr('name', $disk_input.attr('name').replace('image', 'new'));
+					}
+				});
+
+			} else {
+
+				// No disk
+				var $hide_el = $table.find('.disk_bus_options,.disk_file_options,.disk_preview,.disk');
+				$disk_preview.html('');
+				slideUpRows($hide_el);
+				$hide_el.filter('.advanced').removeClass('advanced').addClass('wasadvanced');
+
+			}
+		});
+	};
+
+	
+	$("#vmform .domain_vcpu").change(function changeVCPUEvent() {
+		var $cores = $("#vmform .domain_vcpu:checked");
+
+		if ($cores.length == 1) {
+			$cores.prop("disabled", true);
+		} else {
+			$("#vmform .domain_vcpu").prop("disabled", false);
+		}
+	});
+
+	$("#vmform #domain_mem").change(function changeMemEvent() {
+		$("#vmform #domain_maxmem").val($(this).val());
+	});
+
+	$("#vmform #domain_maxmem").change(function changeMaxMemEvent() {
+		if (parseFloat($(this).val()) < parseFloat($("#vmform #domain_mem").val())) {
+			$("#vmform #domain_mem").val($(this).val());
+		}
+	});
+
+	$("#vmform #domain_machine").change(function changeMachineEvent() {
+		// Cdrom Bus: select IDE for i440 and SATA for q35
+		if ($(this).val().indexOf('i440fx') != -1) {
+			$('#vmform .cdrom_bus').val('ide');
+		} else {
+			$('#vmform .cdrom_bus').val('sata');
+		}
+	});
+
+	$("#vmform #domain_ovmf").change(function changeBIOSEvent() {
+		// using OVMF - disable vmvga vnc option
+		if ($(this).val() == '1' && $("#vmform #vncmodel").val() == 'vmvga') {
+			$("#vmform #vncmodel").val('qxl');
+		}
+		$("#vmform #vncmodel option[value='vmvga']").prop('disabled', ($(this).val() == '1'));
+	}).change(); // fire event now
+
+	$("#vmform").on("spawn_section", function spawnSectionEvent(evt, section, sectiondata) {
+		if (sectiondata.category == 'vDisk') {
+			regenerateDiskPreview(sectiondata.index);
+		}
+		if (sectiondata.category == 'Graphics_Card') {
+			$(section).find(".gpu").change();
+		}
+	});
+
+	$("#vmform").on("destroy_section", function destroySectionEvent(evt, section, sectiondata) {
+		if (sectiondata.category == 'vDisk') {
+			regenerateDiskPreview();
+		}
+	});
+
+	$("#vmform").on("input change", ".cdrom", function changeCdromEvent() {
+		if ($(this).val() == '') {
+			slideUpRows($(this).closest('table').find('.cdrom_bus').closest('tr'));
+		} else {
+			slideDownRows($(this).closest('table').find('.cdrom_bus').closest('tr'));
+		}
+	});
+
+	$("#vmform").on("change", ".disk_select", function changeDiskSelectEvent() {
+		regenerateDiskPreview($(this).closest('table').data('index'));
+	});
+
+	$("#vmform").on("input change", ".disk", function changeDiskEvent() {
+		var $input = $(this);
+		var config = $input.data();
+
+		if (config.hasOwnProperty('pickfilter')) {
+			regenerateDiskPreview($input.closest('table').data('index'));
+		}
+	});
+
+	$("#vmform").on("change", ".gpu", function changeGPUEvent() {
+		var myvalue = $(this).val();
+		var mylabel = $(this).children('option:selected').text();
+		var myindex = $(this).closest('table').data('index');
+
+		if (myindex == 0) {
+			$vnc_sections = $('.vncmodel,.vncpassword,.vnckeymap');
+			if (myvalue == 'vnc') {
+				$vnc_sections.filter('.wasadvanced').removeClass('wasadvanced').addClass('advanced');
+				slideDownRows($vnc_sections.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+			} else {
+				slideUpRows($vnc_sections);
+				$vnc_sections.filter('.advanced').removeClass('advanced').addClass('wasadvanced');
+			}
+		}
+
+		$romfile = $(this).closest('table').find('.romfile');
+		if (myvalue == 'vnc' || myvalue == '') {
+			slideUpRows($romfile.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+			$romfile.filter('.advanced').removeClass('advanced').addClass('wasadvanced');
+		} else {
+			$romfile.filter('.wasadvanced').removeClass('wasadvanced').addClass('advanced');
+			slideDownRows($romfile.not(isVMAdvancedMode() ? '.basic' : '.advanced'));
+
+			$("#vmform .gpu").not(this).each(function () {
+				if (myvalue == $(this).val()) {
+					$(this).prop("selectedIndex", 0).change();
+				}
+			});
+		}
+	});
+
+	$("#vmform").on("click", ".mac_generate", function generateMac() {
+		var $input = $(this).prev('input');
+
+		$.getJSON("/plugins/dynamix.vm.manager/include/VMajax.php?action=generate-mac", function( data ) {
+			if (data.mac) {
+				$input.val(data.mac);
+			}
+		});
+	});
+
+	$("#vmform .formview #btnSubmit").click(function frmSubmit() {
+		var $button = $(this);
+		var $panel = $('.formview');
+		var form = $button.closest('form');
+
+		$("#vmform .disk_select option:selected").not("[value='manual']").closest('table').each(function () {
+			var v = $(this).find('.disk_preview').html();
+			$(this).find('.disk').val(v);
+		});
+
+		$panel.find('input').prop('disabled', false); // enable all inputs otherwise they wont post
+
+				// signal devices to be added or removed
+		form.find('input[name="usb[]"],input[name="pci[]"]').each(function(){
+			if (!$(this).prop('checked')) $(this).prop('checked',true).val($(this).val()+'#remove');
+		});
+		// remove unused graphic cards
+		var gpus = [], i = 0;
+		do {
+			var gpu = form.find('select[name="gpu['+(i++)+'][id]"] option:selected').val();
+			if (gpu) gpus.push(gpu);
+		} while (gpu);
+		form.find('select[name="gpu[0][id]"] option').each(function(){
+			var gpu = $(this).val();
+			if (gpu != 'vnc' && !gpus.includes(gpu)) form.append('<input type="hidden" name="pci[]" value="'+gpu+'#remove">');
+		});
+		// remove unused sound cards
+		var sound = [], i = 0;
+		do {
+			var audio = form.find('select[name="audio['+(i++)+'][id]"] option:selected').val();
+			if (audio) sound.push(audio);
+		} while (audio);
+		form.find('select[name="audio[0][id]"] option').each(function(){
+			var audio = $(this).val();
+			if (audio && !sound.includes(audio)) form.append('<input type="hidden" name="pci[]" value="'+audio+'#remove">');
+		});
+				var postdata = form.find('input,select').serialize().replace(/'/g,"%27");
+				// keep checkbox visually unchecked
+		form.find('input[name="usb[]"],input[name="pci[]"]').each(function(){
+			if ($(this).val().indexOf('#remove')>0) $(this).prop('checked',false);
+		});
+		
+		$panel.find('input').prop('disabled', true);
+		$button.val($button.attr('busyvalue'));
+
+		$.post("/plugins/dynamix.vm.manager/templates/Custom.form.php", postdata, function( data ) {
+			if (data.success) {
+				if (data.vncurl) {
+					var vnc_window=window.open(data.vncurl, '_blank', 'scrollbars=yes,resizable=yes');
+					try {
+						vnc_window.focus();
+					} catch (e) {
+						swal({title:"Browser error",text:"Pop-up Blocker is enabled! Please add this site to your exception list",type:"warning",confirmButtonText:"Ok"},function(){ done() });
+						return;
+					}
+				}
+				done();
+			}
+			if (data.error) {
+				swal({title:"VM creation error",text:data.error,type:"error",confirmButtonText:"Ok"});
+				$panel.find('input').prop('disabled', false);
+				$button.val($button.attr('readyvalue'));
+				resetForm();
+			}
+		}, "json");
+	});
+
+	$("#vmform .xmlview #btnSubmit").click(function frmSubmit() {
+		var $button = $(this);
+		var $panel = $('.xmlview');
+
+		editor.save();
+
+		$panel.find('input').prop('disabled', false); // enable all inputs otherwise they wont post
+
+		var postdata = $panel.closest('form').serialize().replace(/'/g,"%27");
+
+		$panel.find('input').prop('disabled', true);
+		$button.val($button.attr('busyvalue'));
+
+		$.post("/plugins/dynamix.vm.manager/templates/Custom.form.php", postdata, function( data ) {
+			if (data.success) {
+				done();
+			}
+			if (data.error) {
+				swal({title:"VM creation error",text:data.error,type:"error",confirmButtonText:"Ok"});
+				$panel.find('input').prop('disabled', false);
+				$button.val($button.attr('readyvalue'));
+				resetForm();
+			}
+		}, "json");
+	});
+
+	// Fire events below once upon showing page
+	var os = $("#vmform #template_os").val() || 'linux';
+	var os_casted = (os.indexOf('windows') == -1 ? 'other' : 'windows');
+
+	$('#vmform .domain_os').not($('.' + os_casted)).hide();
+	$('#vmform .domain_os.' + os_casted).not(isVMAdvancedMode() ? '.basic' : '.advanced').show();
+
+	
+	// disable usb3 option for windows7 / xp / server 2003 / server 2008
+	var noUSB3 = (os == 'windows7' || os == 'windows2008' || os == 'windowsxp' || os == 'windows2003');
+	if (noUSB3 && ($("#vmform #usbmode").val().indexOf('usb3')===0)) {
+		$("#vmform #usbmode").val('usb2');
+	}
+	$("#vmform #usbmode option[value^='usb3']").prop('disabled', noUSB3);
+
+	$("#vmform .gpu").change();
+
+	$('#vmform .cdrom').change();
+
+	regenerateDiskPreview();
+
+	resetForm();
+});
+</script>
+</div>
+
+	</form>
+</div>
+
+<script src="/webGui/javascript/jquery.filedrop.js?v=1535741906"></script>
+<script src="/webGui/javascript/jquery.filetree.js?v=1535741906"></script>
+<script src="/webGui/javascript/jquery.switchbutton.js?v=1535741906"></script>
+<script src="/plugins/dynamix.vm.manager/javascript/dynamix.vm.manager.js?v=1595282932"></script>
+<script>
+function isVMAdvancedMode() {
+	return true;
+}
+
+function isVMXMLMode() {
+	return ($.cookie('vmmanager_listview_mode') == 'xml');
+}
+
+$(function() {
+	$('.autostart').switchButton({
+		on_label: "Yes",
+		off_label: "No",
+		labels_placement: "right"
+	});
+	$('.autostart').change(function () {
+		$('#domain_autostart').prop('checked', $(this).is(':checked'));
+	});
+
+	$('.advancedview').switchButton({
+		labels_placement: "left",
+		on_label: "XML View",
+		off_label: "Form View",
+		checked: isVMXMLMode()
+	});
+	$('.advancedview').change(function () {
+		toggleRows('xmlview', $(this).is(':checked'), 'formview');
+		$.cookie('vmmanager_listview_mode', $(this).is(':checked') ? 'xml' : 'form', { expires: 3650 });
+	});
+
+	$('#template_img').click(function (){
+		var p = $(this).position();
+		p.left -= 4;
+		p.top -= 4;
+		$('#template_img_chooser_outer').css(p);
+		$('#template_img_chooser_outer').slideDown();
+	});
+	$('#template_img_chooser').on('click', 'div', function (){
+		$('#template_img').attr('src', $(this).find('img').attr('src'));
+		$('#template_icon').val($(this).find('img').attr('basename'));
+		$('#template_img_chooser_outer').slideUp();
+	});
+	$(document).keyup(function(e) {
+		if (e.which == 27) $('#template_img_chooser_outer').slideUp();
+	});
+
+	$("#vmform table[data-category]").each(function () {
+		var category = $(this).data('category');
+
+		updatePrefixLabels(category);
+		 bindSectionEvents(category); 	});
+
+	$("#vmform input[data-pickroot]").fileTreeAttach();
+
+	var $el = $('#form_content');
+	var $xmlview = $el.find('.xmlview');
+	var $formview = $el.find('.formview');
+
+	if ($xmlview.length || $formview.length) {
+		$('.advancedview_panel').fadeIn('fast');
+		if (isVMXMLMode()) {
+			$('.formview').hide();
+			$('.xmlview').filter(function() {
+				return (($(this).prop('style').display + '') === '');
+			}).show();
+		} else {
+			$('.xmlview').hide();
+			$('.formview').filter(function() {
+				return (($(this).prop('style').display + '') === '');
+			}).show();
+		}
+	} else {
+		$('.advancedview_panel').fadeOut('fast');
+	}
+
+	$("#vmform #btnCancel").click(function (){
+		done();
+	});
+
+	$('#form_content').fadeIn('fast');
+});
+</script>
+</div></div>
+<div class="spinner fixed"></div>
+<form name="rebootNow" method="POST" action="/webGui/include/Boot.php"><input type="hidden" name="cmd" value="reboot"></form>
+<iframe id="progressFrame" name="progressFrame" frameborder="0"></iframe>
+<div id="footer"><span id="statusraid"><span id="statusbar"><span class='green strong'><i class='fa fa-play-circle'></i> Array Started</span></span></span><span id='countdown'></span><span id='user-notice' class='red-text'></span><span id='copyright'>Unraid&reg; webGui &copy;2021, Lime Technology, Inc. <a href='http://lime-technology.com/wiki/index.php/Official_Documentation' target='_blank' title="Online manual"><i class='fa fa-book'></i> manual</a></span></div><script>
+// Firefox specific workaround
+if (typeof InstallTrigger!=='undefined') $('#nav-block').addClass('mozilla');
+
+function parseINI(data){
+  var regex = {
+    section: /^\s*\[\s*\"*([^\]]*)\s*\"*\]\s*$/,
+    param: /^\s*([^=]+?)\s*=\s*\"*(.*?)\s*\"*$/,
+    comment: /^\s*;.*$/
+  };
+  var value = {};
+  var lines = data.split(/[\r\n]+/);
+  var section = null;
+  lines.forEach(function(line) {
+    if (regex.comment.test(line)) {
+      return;
+    } else if (regex.param.test(line)) {
+      var match = line.match(regex.param);
+      if (section) {
+        value[section][match[1]] = match[2];
+      } else {
+        value[match[1]] = match[2];
+      }
+    } else if (regex.section.test(line)) {
+      var match = line.match(regex.section);
+      value[match[1]] = {};
+      section = match[1];
+    } else if (line.length==0 && section) {
+      section = null;
+    };
+  });
+  return value;
+}
+// unraid animated logo
+var unraid_logo = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 133.52 76.97" class="unraid_mark"><defs><linearGradient id="unraid_logo" x1="23.76" y1="81.49" x2="109.76" y2="-4.51" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e32929"/><stop offset="1" stop-color="#ff8d30"/></linearGradient></defs><path d="m70,19.24zm57,0l6.54,0l0,38.49l-6.54,0l0,-38.49z" fill="url(#unraid_logo)" class="unraid_mark_9"/><path d="m70,19.24zm47.65,11.9l-6.55,0l0,-23.79l6.55,0l0,23.79z" fill="url(#unraid_logo)" class="unraid_mark_8"/><path d="m70,19.24zm31.77,-4.54l-6.54,0l0,-14.7l6.54,0l0,14.7z" fill="url(#unraid_logo)" class="unraid_mark_7"/><path d="m70,19.24zm15.9,11.9l-6.54,0l0,-23.79l6.54,0l0,23.79z" fill="url(#unraid_logo)" class="unraid_mark_6"/><path d="m63.49,19.24l6.51,0l0,38.49l-6.51,0l0,-38.49z" fill="url(#unraid_logo)" class="unraid_mark_5"/><path d="m70,19.24zm-22.38,26.6l6.54,0l0,23.78l-6.54,0l0,-23.78z" fill="url(#unraid_logo)" class="unraid_mark_4"/><path d="m70,19.24zm-38.26,43.03l6.55,0l0,14.73l-6.55,0l0,-14.73z" fill="url(#unraid_logo)" class="unraid_mark_3"/><path d="m70,19.24zm-54.13,26.6l6.54,0l0,23.78l-6.54,0l0,-23.78z" fill="url(#unraid_logo)" class="unraid_mark_2"/><path d="m70,19.24zm-63.46,38.49l-6.54,0l0,-38.49l6.54,0l0,38.49z" fill="url(#unraid_logo)" class="unraid_mark_1"/></svg>';
+
+var watchdog = new NchanSubscriber('/sub/var');
+watchdog.on('message', function(data) {
+  var ini = parseINI(data);
+  var state = ini['fsState'];
+  var progress = ini['fsProgress'];
+  var status;
+  if (state=='Stopped') {
+    status = "<span class='red strong'><i class='fa fa-stop-circle'></i> Array Stopped</span>";
+  } else if (state=='Started') {
+    status = "<span class='green strong'><i class='fa fa-play-circle'></i> Array Started</span>";
+  } else if (state=='Formatting') {
+    status = "<span class='green strong'><i class='fa fa-play-circle'></i> Array Started</span>&bullet;<span class='orange strong'>Formatting device(s)</span>";
+  } else {
+    status = "<span class='orange strong'><i class='fa fa-pause-circle'></i> "+_('Array '+state)+"</span>";
+  }
+  if (ini['mdResyncPos']>0) {
+    var action;
+    if (ini['mdResyncAction'].indexOf("recon")>=0) action = "Parity-Sync / Data-Rebuild";
+    else if (ini['mdResyncAction'].indexOf("clear")>=0) action = "Clearing";
+    else if (ini['mdResyncAction']=="check") action = "Read-Check";
+    else if (ini['mdResyncAction'].indexOf("check")>=0) action = "Parity-Check";
+    action += " "+(ini['mdResyncPos']/(ini['mdResyncSize']/100+1)).toFixed(1)+" %";
+    status += "&bullet;<span class='orange strong'>"+action.replace('.','.')+"</span>";
+    if (ini['mdResync']==0) status += "(Paused)";
+  }
+  if (progress) status += "&bullet;<span class='blue strong'>"+_(progress)+"</span>";
+  $('#statusbar').html(status);
+});
+var backtotopoffset = 250;
+var backtotopduration = 500;
+$(window).scroll(function() {
+  if ($(this).scrollTop() > backtotopoffset) {
+    $('.back_to_top').fadeIn(backtotopduration);
+  } else {
+    $('.back_to_top').fadeOut(backtotopduration);
+  }
+  var top = $('div#header').height()-1; // header height has 1 extra pixel to cover overlap
+  $('div#menu').css($(this).scrollTop() > top ? {position:'fixed',top:'0'} : {position:'absolute',top:top+'px'});
+});
+$('.back_to_top').click(function(event) {
+  event.preventDefault();
+  $('html,body').animate({scrollTop:0},backtotopduration);
+  return false;
+});
+$(function() {
+  $('div.spinner.fixed').html(unraid_logo);
+  setTimeout(function(){$('div.spinner').not('.fixed').each(function(){$(this).html(unraid_logo);});},500); // display animation if page loading takes longer than 0.5s
+  shortcut.add('F1',function(){HelpButton();});
+  $.post('/webGui/include/Notify.php',{cmd:'init'},function(){timers.notifier = setTimeout(notifier,0);});
+  $('input[value="Apply"],input[value="Apply"],input[name="cmdEditShare"],input[name="cmdUserEdit"]').prop('disabled',true);
+  $('form').find('select,input[type=text],input[type=number],input[type=password],input[type=checkbox],input[type=radio],input[type=file],textarea').each(function(){$(this).on('input change',function() {
+    var form = $(this).parentsUntil('form').parent();
+    form.find('input[value="Apply"],input[value="Apply"],input[name="cmdEditShare"],input[name="cmdUserEdit"]').not('input.lock').prop('disabled',false);
+    form.find('input[value="Done"],input[value="Done"]').not('input.lock').val("Reset").prop('onclick',null).off('click').click(function(){refresh(form.offset().top)});
+  });});
+
+  var top = ($.cookie('top')||0) - $('.tabs').offset().top - 75;
+  if (top>0) {$('html,body').scrollTop(top);}
+  $.removeCookie('top',{path:'/'});
+  if (location.pathname.search(/\/(AddVM|UpdateVM|AddContainer|UpdateContainer)/)==-1) {
+    $('blockquote.inline_help').each(function(i) {
+      $(this).attr('id','helpinfo'+i);
+      var pin = $(this).prev();
+      if (!pin.prop('nodeName')) pin = $(this).parent().prev();
+      while (pin.prop('nodeName') && pin.prop('nodeName').search(/(table|dl)/i)==-1) pin = pin.prev();
+      pin.find('tr:first,dt:last').each(function() {
+        var node = $(this);
+        var name = node.prop('nodeName').toLowerCase();
+        if (name=='dt') {
+          while (!node.html() || node.html().search(/(<input|<select|nbsp;)/i)>=0 || name!='dt') {
+            if (name=='dt' && node.is(':first-of-type')) break;
+            node = node.prev();
+            name = node.prop('nodeName').toLowerCase();
+          }
+          node.css('cursor','help').click(function(){$('#helpinfo'+i).toggle('slow');});
+        } else {
+          if (node.html() && (name!='tr' || node.children('td:first').html())) node.css('cursor','help').click(function(){$('#helpinfo'+i).toggle('slow');});
+        }
+      });
+    });
+  }
+  $('form').append($('<input>').attr({type:'hidden', name:'csrf_token', value:'18FA89EE4D74E62D'}));
+  watchdog.start();
+});
+</script>
+</body>
+</html>
+`;
