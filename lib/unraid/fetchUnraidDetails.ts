@@ -10,6 +10,7 @@ import { logIn } from './logIn';
 import { ServerCoreDetails } from './parseServerDashboardHtml';
 import { Usb } from './parseUsbHtml';
 import { ServerMainDetails } from './parseServerMainHtml';
+import { readServersNewJson } from '@lib/storage';
 
 export interface UnraidDetails extends ServerCoreDetails, ServerMainDetails {
   ip: string;
@@ -24,15 +25,16 @@ export async function fetchUnraidDetails(
   serverAuth: Record<string, string>,
 ): Promise<UnraidDetails[]> {
   await logIn(servers, serverAuth);
+  const _servers = await readServersNewJson();
 
-  const ipCookie = Object.keys(servers)
-    .map((ip) => {
+  const requests = _servers
+    .map(({ ip }) => {
       const cookie = authCookies.get(ip);
       return { ip, cookie };
     })
-    .filter(hasCookie);
+    .filter(hasCookie)
+    .map(({ ip, cookie }) => getAllDetails(ip, cookie));
 
-  const requests = ipCookie.map(({ ip, cookie }) => getAllDetails(ip, cookie));
   const responses = await Promise.all(requests);
   return responses;
 }

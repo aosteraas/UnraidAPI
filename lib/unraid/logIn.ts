@@ -5,7 +5,7 @@ import { authCookies, logInToUrl } from '@lib/auth';
 export async function logIn(
   servers: ServerMap,
   serverAuth: Record<string, string>,
-) {
+): Promise<void[]> {
   const ips = Object.keys(servers);
   const promises = ips.map((ip) => {
     if (!serverAuth[ip] || authCookies.has(ip)) {

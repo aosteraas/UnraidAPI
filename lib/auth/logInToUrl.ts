@@ -7,7 +7,7 @@ export async function logInToUrl(
   url: string,
   data: FormData,
   ip: string,
-): Promise<any> {
+): Promise<void> {
   try {
     const resp = await unraidApi({
       url,
