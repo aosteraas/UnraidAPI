@@ -1,7 +1,7 @@
 import { extractValue } from '@lib/scraper';
 import { parse } from 'node-html-parser';
 
-interface ServerCoreDetails {
+export interface ServerCoreDetails {
   title: string;
   cpu: string;
   memory: string;

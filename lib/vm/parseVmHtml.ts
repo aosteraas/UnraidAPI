@@ -1,6 +1,6 @@
 import { parse } from 'node-html-parser';
 
-interface ParsedVms {
+export interface ParsedVms {
   id: string;
   name: string;
   status: string;

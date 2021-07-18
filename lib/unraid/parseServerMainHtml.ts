@@ -1,7 +1,7 @@
 import { parse } from 'node-html-parser';
 import { extractValue } from '@lib/scraper';
 
-interface ServerMainDetails {
+export interface ServerMainDetails {
   arrayStatus: string;
   arrayProtection: boolean;
   moverRunning: boolean;

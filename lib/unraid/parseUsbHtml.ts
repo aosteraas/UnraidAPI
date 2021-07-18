@@ -1,6 +1,6 @@
 import { parse } from 'node-html-parser';
 
-interface Usb {
+export interface Usb {
   id: string;
   name: string;
 }

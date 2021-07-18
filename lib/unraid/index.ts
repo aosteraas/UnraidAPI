@@ -11,3 +11,5 @@ export * from './changeServerState';
 export * from './getUnraidDetails';
 
 export * from './unraidApi';
+export * from './fetchServerDetails';
+export * from './fetchUsbs';
