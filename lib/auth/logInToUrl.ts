@@ -1,8 +1,13 @@
 import http from 'http';
+import FormData from 'form-data';
 import { unraidApi } from '@lib/unraid/unraidApi';
 import { authCookies } from '.';
 
-export async function logInToUrl(url: string, data, ip: string): Promise<any> {
+export async function logInToUrl(
+  url: string,
+  data: FormData,
+  ip: string,
+): Promise<any> {
   try {
     const resp = await unraidApi({
       url,

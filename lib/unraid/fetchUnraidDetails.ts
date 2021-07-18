@@ -46,8 +46,8 @@ async function getAllDetails(ip: string, cookie: string) {
   const usb: Usb[] = [];
 
   if (vms.vms[0]?.id) {
-    const _usb = await fetchUsbs(ip, cookie, vms.vms[0]?.id);
-    usb.concat(_usb);
+    const _usb = await fetchUsbs(ip, cookie, vms.vms[0].id);
+    usb.push(..._usb);
   }
 
   return { ip, ...core, dockers, ...vms, usb };
